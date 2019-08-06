@@ -1,4 +1,4 @@
-# 直接安装 Tensorflow 环境
+# 快速开始：安装 Python 和 Tensorflow 环境，并使用本例
 
 ## 安装 Python3
 
@@ -23,4 +23,23 @@
     pip 19.2.1 from /home/.../tf/lib/python3.7/site-packages/pip (python 3.7)
     
 ## 安装 Tensorflow
+
+进入对应的 Python 虚拟环境
+
+    $ cd workspaces
+    $ . tf/bin/activate
+
+Clone 此项目
+
+    (tf) $ git clone https://github.com/iascchen/ai_study_notes.git
+    
+安装所需要的 Python 包，如果没有 GPU 请把 tensorflow-gpu 注释掉。
+    
+    (tf) $ cd ai_study_notes/src
+    (tf) ai_study_notes/src$ ls
+    (tf) ai_study_notes/src$ pip install -r requirements.txt
+    
+验证代码
+
+    (tf) $ python hello_gpu.py
 

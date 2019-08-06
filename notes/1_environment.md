@@ -68,8 +68,9 @@ UbuntuUbuntu 的软件源配置文件是/etc/apt/sources.list。将系统自带�
     # deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse
     # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse
 
-具体操作指令如下$ cd /etc/apt
+具体操作指令如下
 
+    $ cd /etc/apt
     $ sudo cp sources.list sources.list.old
     $ sudo vi sources.list
     $ sudo apt-get update
