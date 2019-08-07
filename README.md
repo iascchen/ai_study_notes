@@ -1,4 +1,4 @@
-# ai_study_notes
+# AI 学习笔记
 
 整理一下我的 AI 学习笔记
 
@@ -13,9 +13,10 @@ Ubuntu 18.04, Tensorflow 1.14.0
 
 ## Tensorflow 学习笔记
 
-### 初始 Keras
+### 初识 Keras
 
 * 最简单的 MNIST 数字识别
+* 定义自己的网络
 
 ### 图像分类
 
