@@ -1,6 +1,6 @@
 # Hello MNIST
 
-[hello_mnist.py](../src/hello_mnist.py) 描述了一个最简单的 Keras 网络。
+[hello_mnist.py](../../src/hello_mnist.py) 描述了一个最简单的 Keras 网络。
 
 下面我们来简单的解释一下代码。
 
