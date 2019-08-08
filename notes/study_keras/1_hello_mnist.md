@@ -324,7 +324,7 @@ tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --log
 
 ## 模型运用到 web 和 APP
 
-[hello_mnist_5.py](../../src/study_keras/hello_mnist_5.py) 展示了将训练好的模型转换成 tensorflow.js 和 tensorflow lite 的过程，能够将这个模型运用与 web 或 APP。
+[hello_mnist_5.py](../../src/study_keras/hello_mnist_5.py) 展示了将训练好的模型转换成 tensorflow.js 和 tensorflow lite 的过程，能够将这个模型运用于 web 或 APP。
 
 输出成 tensorflow.js 的模型
 
