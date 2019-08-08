@@ -67,7 +67,7 @@ print('Spend: %f ms' % (end_time - begin_time))
 
 # obtain the top-5 predictions
 results = imagenet_utils.decode_predictions(prediction)
-print(results)
+# print(results)
 
 assert "Egyptian_cat" in [item[1] for item in results[0]]
 
