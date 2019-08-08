@@ -235,7 +235,7 @@ Keras H5 模型的加载也很简单，使用 tf.keras.models.load_model 即可�
 
 [hello_mnist_3.py](../../src/study_keras/hello_mnist_3.py) 增加了一些代码，是我们能够直观的观察到网络训练的过程，并利用 tensorboard 可视化出来。
 
-### 利用 Callback 保存训练过程
+### 利用 Callback 保存训练过程中的 weights
 
 在 model.fit 中增加了两个 callback 函数，用来输出训练过程中的信息，便于观察训练过程。
 
@@ -245,6 +245,8 @@ cp_callback 用于输出运算过程中的 Checkpoint 值。period 指定每两�
     
     checkpoint_path = "%s/hello_mnist_3-{epoch:04d}.ckpt" % base_path
     cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, period=train_period,
+
+### 在 Tensorboard 里显示训练过程
                                                      verbose=1)
 tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --logdir %logdir%" 命令打开 TensorBoard。
 然后在浏览器中访问 http://localhost:6006 
@@ -291,6 +293,56 @@ tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --log
 ## 使用 one-hot 编码数据进行训练
 
 [hello_mnist_4.py](../../src/study_keras/hello_mnist_4.py) 对于 Label 数据进行了变换，采用 ont-hot 编码构建了结果向量。
-使用这种编码方式，能够更容易理解对图片进行多分类的训练场景（使用 mul-hot 编码）。
+使用这种编码方式，能够更容易理解对图片进行多分类的训练场景。
 
-## 模型运用到 web 和 移动端
+    y_train_one_hot = to_categorical(y_train)
+    y_test_one_hot = to_categorical(y_test)
+    
+    print("y_train \n%s" % y_train[:10])
+    print("y_train_one_hot \n%s" % y_train_one_hot[:10])
+    
+下面的输出，展示这两种结果集编码前10条记录的差异。
+
+    y_train 
+    [5 0 4 1 9 2 1 3 1 4]
+    y_train_one_hot 
+    [[0. 0. 0. 0. 0. 1. 0. 0. 0. 0.]
+     [1. 0. 0. 0. 0. 0. 0. 0. 0. 0.]
+     [0. 0. 0. 0. 1. 0. 0. 0. 0. 0.]
+     [0. 1. 0. 0. 0. 0. 0. 0. 0. 0.]
+     [0. 0. 0. 0. 0. 0. 0. 0. 0. 1.]
+     [0. 0. 1. 0. 0. 0. 0. 0. 0. 0.]
+     [0. 1. 0. 0. 0. 0. 0. 0. 0. 0.]
+     [0. 0. 0. 1. 0. 0. 0. 0. 0. 0.]
+     [0. 1. 0. 0. 0. 0. 0. 0. 0. 0.]
+     [0. 0. 0. 0. 1. 0. 0. 0. 0. 0.]]  
+  
+此处的 loss 需要做个改变了，直接使用 categorical_crossentropy。
+    
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.fit(x_train, y_train_one_hot, epochs=5)
+
+## 模型运用到 web 和 APP
+
+[hello_mnist_5.py](../../src/study_keras/hello_mnist_5.py) 展示了将训练好的模型转换成 tensorflow.js 和 tensorflow lite 的过程，能够将这个模型运用与 web 或 APP。
+
+输出成 tensorflow.js 的模型
+
+    tfjs_path = "%s/hello_mnist_5.tfjs" % base_path
+    tfjs.converters.save_keras_model(loaded_model, tfjs_path)
+    
+输出成 tensorflow Lite 的模型。
+
+**注意** 这段代码参考自官方文档，但是似乎不能正确运行（v1.14.0）。
+
+    tflite_path = "%s/hello_mnist_5.tflite" % base_path
+    converter = tf.lite.TFLiteConverter.from_keras_model_file(h5_path)
+    tflite_model = converter.convert()
+    with open(tflite_path, "wb") as fw:
+        fw.write(tflite_model)
+        
+返回错误：
+
+    2019-08-08 15:45:30.670308: I tensorflow/core/grappler/optimizers/meta_optimizer.cc:716] Optimization results for grappler item: graph_to_optimize
+    2019-08-08 15:45:30.670319: I tensorflow/core/grappler/optimizers/meta_optimizer.cc:718]   function_optimizer: function_optimizer did nothing. time = 0.003ms.
+    2019-08-08 15:45:30.670325: I tensorflow/core/grappler/optimizers/meta_optimizer.cc:718]   function_optimizer: function_optimizer did nothing. time = 0ms.

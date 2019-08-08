@@ -1,79 +1,34 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import backend as K
+from tensorflow.python.keras.utils import to_categorical
 
 mnist = tf.keras.datasets.mnist
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x_train, x_test = x_train / 255.0, x_test / 255.0
 
-base_path = "../../output"
-h5_path = "%s/hello_mnist_1.h5" % base_path
+y_train_one_hot = to_categorical(y_train)
+y_test_one_hot = to_categorical(y_test)
 
-loaded_model = tf.keras.models.load_model(h5_path)
-loaded_model.summary()
+print("y_train \n%s" % y_train[:10])
+print("y_train_one_hot \n%s" % y_train_one_hot[:10])
 
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Flatten(input_shape=(28, 28)),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dropout(0.2),
+    tf.keras.layers.Dense(10, activation='softmax')
+])
 
-# TODO
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.fit(x_train, y_train_one_hot, epochs=5)
 
-def layer_to_visualize(_model, _layer):
-    inputs = [K.learning_phase()] + _model.inputs
+result_loss, result_acc = model.evaluate(x_test, y_test_one_hot)
+print('Test accuracy:', result_acc)
 
-    _convout1_f = K.function(inputs, [_layer.output])
+predictions = model.predict(x_test)
+predictions_labels = [np.argmax(predictions[i]) for i in range(len(x_test))]
 
-    def convout1_f(X):
-        # The [0] is to disable the training phase flag
-        return _convout1_f([0] + [X])
-
-    convolutions = convout1_f(img_to_visualize)
-    convolutions = np.squeeze(convolutions)
-
-    print('Shape of conv:', convolutions.shape)
-
-    n = convolutions.shape[0]
-    n = int(np.ceil(np.sqrt(n)))
-
-    # Visualization of each filter of the layer
-    fig = plt.figure(figsize=(12, 8))
-    for i in range(len(convolutions)):
-        ax = fig.add_subplot(n, n, i + 1)
-        ax.imshow(convolutions[i], cmap='gray')
-
-
-# Specify the layer to want to visualize
-layer_to_visualize(convout1)
-
-
-# function to get activations of a layer
-def get_activations(model, layer, X_batch):
-    get_activations = K.function([model.layers[0].input, K.learning_phase()], [model.layers[layer].output, ])
-    activations = get_activations([X_batch, 0])
-    return activations
-
-
-# Get activations using layername
-def get_activation_from_layer(model, layer_name, layers, layers_dim, img):
-    acti = get_activations(model, layers[layer_name], img.reshape(1, 256, 256, 3))[0].reshape(layers_dim[layer][0],
-                                                                                              layers_dim[layer_name][1],
-                                                                                              layers_dim[layer_name][2])
-    return np.sum(acti, axis=2)
-
-
-# Map layer name with layer index
-layers = dict()
-index = None
-for idx, layer in enumerate(model.layers):
-    layers[layer.name] = idx
-
-# Map layer name with its dimension
-layers_dim = dict()
-
-for layer in model.layers:
-    layers_dim[layer.name] = layer.get_output_at(0).get_shape().as_list()[1:]
-
-img1 = utils.load_img("image.png", target_size=(256, 256))
-
-# define the layer you want to visualize
-layer_name = "conv2d_22"
-plt.imshow(get_activation_from_layer(model, layer_name, layers, layers_dim, img1), cmap="jet")
+index = np.arange(0, len(y_test))
+diff = index[predictions_labels != y_test]
+print("%d differences: \n%s" % (len(diff), diff))
