@@ -333,7 +333,7 @@ tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --log
     
 输出成 tensorflow Lite 的模型。
 
-**注意** 这段代码参考自官方文档，但是似乎不能正确运行（v1.14.0）。
+**注意** 这段代码参考自官方文档，Ubuntu 18.04 上可以。
 
     tflite_path = "%s/hello_mnist_5.tflite" % base_path
     converter = tf.lite.TFLiteConverter.from_keras_model_file(h5_path)
@@ -341,7 +341,7 @@ tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --log
     with open(tflite_path, "wb") as fw:
         fw.write(tflite_model)
         
-返回错误：
+在 MAC 上不能正确运行（tf v1.14.0), 返回错误：
 
     2019-08-08 15:45:30.670308: I tensorflow/core/grappler/optimizers/meta_optimizer.cc:716] Optimization results for grappler item: graph_to_optimize
     2019-08-08 15:45:30.670319: I tensorflow/core/grappler/optimizers/meta_optimizer.cc:718]   function_optimizer: function_optimizer did nothing. time = 0.003ms.
