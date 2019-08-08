@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow.python.keras.utils import plot_model
 
 mnist = tf.keras.datasets.mnist
 
@@ -15,10 +16,10 @@ model = tf.keras.models.Sequential([
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 model.fit(x_train, y_train, epochs=5)
 
-#######################
-# save and load model structure to json or yaml
-#######################
-
+# #######################
+# # save and load model structure to json or yaml
+# #######################
+#
 base_path = "../../output"
 
 # json model
@@ -74,3 +75,10 @@ print('Loaded Json Model Test accuracy:', result_acc)
 
 result_loss, result_acc = yaml_model.evaluate(x_test, y_test)
 print('Loaded Yaml Model Test accuracy:', result_acc)
+
+#######################
+# draw model
+#######################
+
+model_plot_path = "%s/hello_mnist_2_model_plot.png" % base_path
+plot_model(model, to_file=model_plot_path, show_shapes=True, show_layer_names=True)

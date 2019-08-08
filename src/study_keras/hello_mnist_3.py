@@ -1,3 +1,6 @@
+import random
+
+import matplotlib.pyplot as plt
 import tensorflow as tf
 
 mnist = tf.keras.datasets.mnist
@@ -13,7 +16,53 @@ model = tf.keras.models.Sequential([
 ])
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-history = model.fit(x_train, y_train, epochs=5)
+model.summary()
 
-result_loss, result_acc = model.evaluate(x_test, y_test)
-print('Test accuracy:', result_acc)
+#######################
+# record epoch checkpoint
+#######################
+
+train_epochs = 6
+train_period = 2
+
+# Create checkpoint callback
+base_path = "../../output"
+
+checkpoint_path = "%s/hello_mnist_3-{epoch:04d}.ckpt" % base_path
+cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, period=train_period,
+                                                 verbose=1)
+
+history = model.fit(x_train, y_train, epochs=train_epochs, callbacks=[cp_callback])
+
+
+#######################
+# draw history
+#######################
+
+def random_color(number_of_colors):
+    return ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]) for i in range(number_of_colors)]
+
+
+def draw_history(_history):
+    history_dict = _history.history
+
+    keys = history_dict.keys()
+    keys_list = list(keys)
+    print(keys_list)
+
+    values = [history_dict[keys_list[i]] for i in range(len(keys_list))]
+    labels = [keys_list[i] for i in range(len(keys_list))]
+    colors = random_color(len(keys_list))
+
+    epochs = range(1, len(values[0]) + 1)
+
+    for i in range(len(keys_list)):
+        plt.plot(epochs, values[i], colors[i], label=labels[i])
+
+    plt.xlabel('Epochs')
+    plt.legend()
+
+    plt.show()
+
+
+draw_history(history)
