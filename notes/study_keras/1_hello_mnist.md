@@ -30,7 +30,7 @@
         tf.keras.layers.Dense(10, activation='softmax')
     ])
 
-* Flatten层：将输入的 28 * 28 的像素值，拉成一个长向量。这个 28 * 28 尺寸是和训练数据有关的。如果验证是输入的图片不是 28 * 28，需要 resize 成这个尺寸才能使用。
+* Flatten层：将输入的 28 * 28 的像素值，拉成一个长向量。这个 28 * 28 尺寸是和训练数据有关的。如果验证时输入的图片不是 28 * 28，需要 resize 成这个尺寸才能使用。
 * Dense层1：全连接层，使用了 128 个神经元和 relu 激活。你也可以试试更多或更少的神经元数量，例如 512；以及其他的激活函数，例如 sigmoid。
 * Dropout层：为了避免过拟合而增加，能够训练出鲁棒性更好的模型。这个参数可以改改试试，看看会有什么效果。
 * Dense层2：全连接层，因为训练目标是实现多分类模型（0 - 9），所以，用了 10 个神经元，并且使用了 softmax 激活。
@@ -115,14 +115,16 @@ loaded_model.evaluate 返回的结果是与 model.compile 时使用的 metrics=[
 
 ### 模型的存储和加载
 
-下面的代码，将训练的模型存储起来，格式为 Keras H5。在学习中你可能见到过很多已经存储好的 Tensorflow 模型，需要注意的是，这些模型之间可能并不相同。这个部分后续再详细介绍。
+下面的代码，将训练的模型存储起来，格式为 Keras H5。
+
+在后面学习中，你可能会遇到很多已经存储好的 Tensorflow 模型，需要注意的是，这些模型之间可能并不互相通用。这个部分后续再详细介绍。
 
     # 模型存储
     base_path = "../../output"
     h5_path = "%s/hello_mnist_1.h5" % base_path
     model.save(h5_path)
 
-模型的加载也很简单，使用 tf.keras.models.load_model 即可实现。
+Keras H5 模型的加载也很简单，使用 tf.keras.models.load_model 即可实现。
 
     # 模型加载
     loaded_model = tf.keras.models.load_model(h5_path)
@@ -177,6 +179,7 @@ loaded_model.evaluate 返回的结果是与 model.compile 时使用的 metrics=[
     with open(json_path, 'r') as fr:
         new_json_string = fr.read()
     json_model = tf.keras.models.model_from_json(new_json_string)
+    
     json_model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 保存和加载 YAML 格式的模型，加载的模型必须 compile 才能使用
@@ -192,29 +195,35 @@ loaded_model.evaluate 返回的结果是与 model.compile 时使用的 metrics=[
 
     yaml_model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
+您可以打开这两个生成的文件看看，里面有各种可以配置的参数，初步了解一下能够对网络模型做哪些参数定制，为以后学习网络优化做个铺垫。
+
 ### 单独保存 weights
 
 **注意** loaded_model 必须与原模型完全一致。
 
-保存和加载 TensorFlow Checkpoint 格式的权重文件
+保存和加载 TensorFlow Checkpoint 格式的权重文件。会生成 .index 和 .data* 的一系列文件
     
     weight_path = "%s/hello_mnist_2.weights" % base_path
     model.save_weights(weight_path)
     
     json_model.load_weights(weight_path)
 
-保存和加载 Keras 格式的权重文件
+保存和加载 Keras 格式的权重文件。生成单独的 .h5 文件。
         
     h5_weight_path = "%s/hello_mnist_2.weights.h5" % base_path
     model.save_weights(h5_weight_path, save_format='h5')
     
     yaml_model.load_weights(h5_weight_path)
 
+## 观察训练的过程
+
+[hello_mnist_3.py](../../src/study_keras/hello_mnist_3.py) 增加了一些代码，是我们能够直观的观察到网络训练的过程，并利用 tensorboard 可视化出来。
+
+
+
 ## 使用 one-hot 编码数据进行训练
 
-[hello_mnist_2.py](../../src/study_keras/hello_mnist_2.py) 对于 Label 数据进行了变换，采用 ont-hot 编码构建了结果向量。
+[hello_mnist_3.py](../../src/study_keras/hello_mnist_3.py) 对于 Label 数据进行了变换，采用 ont-hot 编码构建了结果向量。
 使用这种编码方式，能够更容易理解对图片进行多分类的训练场景（使用 mul-hot 编码）。
-
-## 保存和加载已经训练好的模型
 
 ## 模型运用到 web 和 移动端
