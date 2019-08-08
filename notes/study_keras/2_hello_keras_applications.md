@@ -31,3 +31,7 @@
     
     prediction = model_100.predict(pImg)
     results = imagenet_utils.decode_predictions(prediction)
+    
+展示一下生成的模型图片
+
+![mobilenet](hello_kerasapp_mobilenet_model_plot.png)
