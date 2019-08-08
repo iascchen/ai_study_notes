@@ -60,7 +60,7 @@
 基本工具安装
 
     $ apt-get update
-    $ apt-get install -y vim git graphviz
+    $ apt-get install -y vim git
 
 ## 使用本例
 

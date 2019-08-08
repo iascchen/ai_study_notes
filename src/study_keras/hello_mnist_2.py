@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.python.keras.utils import plot_model
 
 mnist = tf.keras.datasets.mnist
 
@@ -75,10 +74,3 @@ print('Loaded Json Model Test accuracy:', result_acc)
 
 result_loss, result_acc = yaml_model.evaluate(x_test, y_test)
 print('Loaded Yaml Model Test accuracy:', result_acc)
-
-#######################
-# draw model
-#######################
-
-model_plot_path = "%s/hello_mnist_2_model_plot.png" % base_path
-plot_model(model, to_file=model_plot_path, show_shapes=True, show_layer_names=True)

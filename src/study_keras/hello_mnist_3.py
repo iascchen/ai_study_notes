@@ -32,7 +32,16 @@ checkpoint_path = "%s/hello_mnist_3-{epoch:04d}.ckpt" % base_path
 cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, period=train_period,
                                                  verbose=1)
 
-history = model.fit(x_train, y_train, epochs=train_epochs, callbacks=[cp_callback])
+##################
+# $ tensorboard --logdir base_path/hello_mnist_3.logs/
+##################
+
+log_path = "%s/hello_mnist_3.logs" % base_path
+tp_callback = tf.keras.callbacks.TensorBoard(log_dir=log_path, write_graph=True, write_grads=True, write_images=True,
+                                             histogram_freq=0, embeddings_freq=0, embeddings_layer_names=None,
+                                             embeddings_metadata=None)
+
+history = model.fit(x_train, y_train, epochs=train_epochs, callbacks=[cp_callback, tp_callback])
 
 
 #######################

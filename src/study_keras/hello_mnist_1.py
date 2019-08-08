@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+from tensorflow.python.keras.utils import plot_model
 
 mnist = tf.keras.datasets.mnist
 
@@ -31,8 +32,8 @@ print('Evaluate Result:', result)
 #######################
 # save and load model
 #######################
-
 base_path = "../../output"
+
 h5_path = "%s/hello_mnist_1.h5" % base_path
 model.save(h5_path)
 
@@ -52,3 +53,11 @@ predictions_labels = [np.argmax(predictions[i]) for i in range(len(x_test))]
 index = np.arange(0, len(y_test))
 diff = index[predictions_labels != y_test]
 print("%d differences: \n%s" % (len(diff), diff))
+
+#######################
+# draw model
+#######################
+
+# use plot_model need graphviz be installed
+model_plot_path = "%s/hello_mnist_1_model_plot.png" % base_path
+plot_model(model, to_file=model_plot_path, show_shapes=True, show_layer_names=True)

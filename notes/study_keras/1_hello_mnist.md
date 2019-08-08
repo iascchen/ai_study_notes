@@ -87,6 +87,22 @@ tf.keras.Model.fit 除了需要输入训练集和结果之外，还可以采用�
     Trainable params: 101,770
     Non-trainable params: 0
 
+### 模型的可视化
+
+    base_path = "../../output"
+    
+    model_plot_path = "%s/hello_mnist_1_model_plot.png" % base_path
+    plot_model(model, to_file=model_plot_path, show_shapes=True, show_layer_names=True)
+
+执行这段代码，必需首先安装 graphviz 工具，
+
+    # MAC OS
+    $ sudo chown -R $(whoami) /usr/local/sbin
+    $ brew install graphviz
+    
+    # Linux Ubuntu
+    $ sudo apt-get install graphviz
+
 ### 模型的训练的历史
 
     history = model.fit(x_train, y_train, epochs=5)
@@ -219,8 +235,59 @@ Keras H5 模型的加载也很简单，使用 tf.keras.models.load_model 即可�
 
 [hello_mnist_3.py](../../src/study_keras/hello_mnist_3.py) 增加了一些代码，是我们能够直观的观察到网络训练的过程，并利用 tensorboard 可视化出来。
 
+### 利用 Callback 保存训练过程
 
+在 model.fit 中增加了两个 callback 函数，用来输出训练过程中的信息，便于观察训练过程。
 
+    history = model.fit(x_train, y_train, epochs=train_epochs, callbacks=[cp_callback, tp_callback])
+
+cp_callback 用于输出运算过程中的 Checkpoint 值。period 指定每两次迭代保存一次
+    
+    checkpoint_path = "%s/hello_mnist_3-{epoch:04d}.ckpt" % base_path
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, period=train_period,
+                                                     verbose=1)
+tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --logdir %logdir%" 命令打开 TensorBoard。
+然后在浏览器中访问 http://localhost:6006 
+
+    ##################
+    # $ tensorboard --logdir base_path/hello_mnist_3.logs/ 
+    ##################
+
+    log_path = "%s/hello_mnist_3.logs" % base_path
+    tp_callback = tf.keras.callbacks.TensorBoard(log_dir=log_path, write_graph=True, write_grads=True, write_images=True,
+                                                 histogram_freq=0, embeddings_freq=0, embeddings_layer_names=None,
+                                                 embeddings_metadata=None)
+
+### 显示训练 History Plot 图表
+
+    def random_color(number_of_colors):
+        return ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]) for i in range(number_of_colors)]
+    
+    
+    def draw_history(_history):
+        history_dict = _history.history
+    
+        keys = history_dict.keys()
+        keys_list = list(keys)
+        print(keys_list)
+    
+        values = [history_dict[keys_list[i]] for i in range(len(keys_list))]
+        labels = [keys_list[i] for i in range(len(keys_list))]
+        colors = random_color(len(keys_list))
+    
+        epochs = range(1, len(values[0]) + 1)
+    
+        for i in range(len(keys_list)):
+            plt.plot(epochs, values[i], colors[i], label=labels[i])
+    
+        plt.xlabel('Epochs')
+        plt.legend()
+    
+        plt.show()
+    
+    
+    draw_history(history)
+   
 ## 使用 one-hot 编码数据进行训练
 
 [hello_mnist_4.py](../../src/study_keras/hello_mnist_4.py) 对于 Label 数据进行了变换，采用 ont-hot 编码构建了结果向量。

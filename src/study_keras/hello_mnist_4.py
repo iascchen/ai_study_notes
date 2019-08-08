@@ -8,37 +8,19 @@ mnist = tf.keras.datasets.mnist
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x_train, x_test = x_train / 255.0, x_test / 255.0
 
-model = tf.keras.models.Sequential([
-    tf.keras.layers.Flatten(input_shape=(28, 28)),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Dense(10, activation='softmax')
-])
-
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.summary()
-
-#######################
-# record epoch checkpoint
-#######################
-
-train_epochs = 6
-train_period = 2
-
-# Create checkpoint callback
 base_path = "../../output"
+h5_path = "%s/hello_mnist_1.h5" % base_path
 
-checkpoint_path = "%s/hello_mnist_3-{epoch:04d}.ckpt" % base_path
-cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, period=train_period,
-                                                 verbose=1)
-
-history = model.fit(x_train, y_train, epochs=train_epochs, callbacks=[cp_callback])
+loaded_model = tf.keras.models.load_model(h5_path)
+loaded_model.summary()
 
 
-def layer_to_visualize(layer):
-    inputs = [K.learning_phase()] + model.inputs
+# TODO
 
-    _convout1_f = K.function(inputs, [layer.output])
+def layer_to_visualize(_model, _layer):
+    inputs = [K.learning_phase()] + _model.inputs
+
+    _convout1_f = K.function(inputs, [_layer.output])
 
     def convout1_f(X):
         # The [0] is to disable the training phase flag

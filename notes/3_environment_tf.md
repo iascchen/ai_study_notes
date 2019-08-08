@@ -3,7 +3,7 @@
 ## 安装 Python3
 
     $ sudo apt-get update && sudo apt-get upgrade
-    $ sudo apt-get install -y python3-pip python3-dev python-virtualenv graphviz
+    $ sudo apt-get install -y python3-pip python3-dev python-virtualenv
 
 创建工作目录
 
