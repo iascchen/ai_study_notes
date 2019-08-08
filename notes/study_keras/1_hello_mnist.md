@@ -245,9 +245,10 @@ cp_callback 用于输出运算过程中的 Checkpoint 值。period 指定每两�
     
     checkpoint_path = "%s/hello_mnist_3-{epoch:04d}.ckpt" % base_path
     cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, period=train_period,
+                                                    verbose=1)
 
 ### 在 Tensorboard 里显示训练过程
-                                                     verbose=1)
+                                                     
 tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --logdir %logdir%" 命令打开 TensorBoard。
 然后在浏览器中访问 http://localhost:6006 
 
