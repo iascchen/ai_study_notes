@@ -11,22 +11,22 @@ from tensorflow.python.keras.utils import plot_model
 
 model_25 = MobileNet()
 model_25.summary()
-print("0.25 》》》")
+print("0.25 > > >")
 
 model_50 = MobileNet(input_shape=None, alpha=0.5, depth_multiplier=1, dropout=1e-3, include_top=True,
                      weights='imagenet', input_tensor=None, pooling=None, classes=1000)
 model_50.summary()
-print("0.50 》》》")
+print("0.50 > > >")
 
 model_75 = MobileNet(input_shape=None, alpha=0.75, depth_multiplier=1, dropout=1e-3, include_top=True,
                      weights='imagenet', input_tensor=None, pooling=None, classes=1000)
 model_75.summary()
-print("0.75 》》》")
+print("0.75 > > >")
 
 model_100 = MobileNet(input_shape=None, alpha=1.0, depth_multiplier=1, dropout=1e-3, include_top=True,
                       weights='imagenet', input_tensor=None, pooling=None, classes=1000)
 model_100.summary()
-print("1.00 》》》")
+print("1.00 > > >")
 
 '''
 
