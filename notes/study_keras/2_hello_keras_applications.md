@@ -65,7 +65,7 @@
     
 定义不同的模型
     
-    # define the model
+    # # define the model
     #
     # model = densenet.DenseNet121(include_top=True, weights='imagenet', input_tensor=None, input_shape=None,
     #                              pooling=None, classes=1000)
@@ -87,7 +87,7 @@
                         
     model.summary()
     
-## 观察网络层的调整
+## 网络层的可视化
     
 [hello_kerasapp_mobilenet_v2.py](../../src/study_keras/hello_kerasapp_mobilenet_v2.py) 增加了更多的对 MobileNet V2 网络层状态的观察。
 

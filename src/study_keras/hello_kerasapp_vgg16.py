@@ -37,7 +37,7 @@ def process_image(img_path):
 test_img_path = '%s/Abyssinian_1.jpg' % images_dir
 pImg = process_image(test_img_path)
 
-# define the model
+# # define the model
 #
 # model = densenet.DenseNet121(include_top=True, weights='imagenet', input_tensor=None, input_shape=None,
 #                              pooling=None, classes=1000)
@@ -59,7 +59,7 @@ model = vgg16.VGG16(include_top=True, weights='imagenet', input_tensor=None, inp
 
 model.summary()
 
-# 用于记录测试用时
+# record spend time
 begin_time = time.clock()
 prediction = model.predict(pImg)
 end_time = time.clock()

@@ -7,7 +7,7 @@ from tensorflow.python.keras.applications import imagenet_utils
 from tensorflow.python.keras.utils import plot_model
 
 '''
-# 不同精度的写法
+# different alpha 
 
 model_25 = MobileNet()
 model_25.summary()
@@ -53,7 +53,7 @@ model_100 = mobilenet.MobileNet(input_shape=None, alpha=1.0, depth_multiplier=1,
                                 weights='imagenet', input_tensor=None, pooling=None, classes=1000)
 model_100.summary()
 
-# 用于记录测试用时
+# record spend time
 begin_time = time.clock()
 prediction = model_100.predict(pImg)
 end_time = time.clock()
