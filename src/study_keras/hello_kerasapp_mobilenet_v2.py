@@ -3,23 +3,39 @@
 # https://keras.io/examples/conv_filter_visualization/
 ##########################
 
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow.keras.backend as K
-# from tensorflow.keras.applications import mobilenet_v2
-from tensorflow.keras.applications import vgg16
+from tensorflow.keras.applications import mobilenet_v2
+from tensorflow.python.keras.utils import plot_model
+
+# from tensorflow.keras.applications import vgg16
 
 base_path = "../../data"
 output_path = "../../output"
 images_dir = "%s/images" % base_path
 
 # define the model
-# model_100 = mobilenet_v2.MobileNetV2(input_shape=None, alpha=1.0, include_top=True,
-#                                      weights='imagenet', input_tensor=None, pooling=None, classes=1000)
+model_100 = mobilenet_v2.MobileNetV2(input_shape=None, alpha=1.0, include_top=True,
+                                     weights='imagenet', input_tensor=None, pooling=None, classes=1000)
 
-model_100 = vgg16.VGG16(weights='imagenet', include_top=False)
+# model_100 = vgg16.VGG16(weights='imagenet', include_top=False)
 
 model_100.summary()
+
+#######################
+# draw model
+#######################
+
+# use plot_model need graphviz be installed
+model_plot_path = "%s/hello_kerasapp_mobilenet_v2_model_plot.png" % output_path
+plot_model(model_100, to_file=model_plot_path, show_shapes=True, show_layer_names=True)
+
+yaml_path = "%s/mobilenet_v2.model.yaml" % output_path
+yaml_string = model_100.to_yaml()
+with open(yaml_path, 'w') as fw:
+    fw.write(yaml_string)
 
 
 ##########################
@@ -255,6 +271,10 @@ def process_image(x, former):
 #     # Finally draw and store the best filters to disk
 #     _draw_filters(processed_filters)
 
+################
+# visualize conv layer filters
+################
+
 
 def generate_pattern(model, layer_name, filter_index=0, size=150, epochs=15):
     layer_output = model.get_layer(layer_name).output
@@ -276,6 +296,36 @@ def generate_pattern(model, layer_name, filter_index=0, size=150, epochs=15):
     return deprocess_image(img)
 
 
+def visualize_layer_filters(model, layer_name, filters_size=16, size=64, epochs=15):
+    margin = 3
+    results = np.zeros((8 * size + 7 * margin, 8 * size + 7 * margin, 3)).astype('uint8')
+
+    # most display first 64 filters
+    for i in range(8):
+        for j in range(8):
+
+            if (i * 8 + j) >= filters_size:
+                break
+
+            filter_image = generate_pattern(model, layer_name, filter_index=(i * 8 + j), size=size, epochs=epochs)
+
+            horizontal_start = i * size + i * margin
+            horizontal_end = horizontal_start + size
+
+            vertical_start = j * size + j * margin
+            vertical_end = vertical_start + size
+
+            results[horizontal_start:horizontal_end, vertical_start:vertical_end, :] = filter_image
+            print(".%d" % (i * 8 + j))
+
+    plt.figure(figsize=(20, 20))
+    plt.imshow(results)
+
+    plt.show()
+    cv2.imwrite("%s/%s_filter.jpg" % (output_path, layer_name), results)
+
+
+#
 # def generate_heat_map(_model, input_image, layer_name, class_index):
 #     output = _model.output[:, class_index]
 #     last_layer = _model.get_layer(layer_name)
@@ -340,35 +390,7 @@ def generate_pattern(model, layer_name, filter_index=0, size=150, epochs=15):
 #         plt.show()
 
 
-def visualize_layer_filters(model, layer_name, size=64, epochs=15):
-    margin = 3
-    results = np.zeros((8 * size + 7 * margin, 8 * size + 7 * margin, 3)).astype('uint8')
-
-    for i in range(8):
-        for j in range(8):
-            filter_image = generate_pattern(model, layer_name, filter_index=(i * 8 + j), size=size, epochs=epochs)
-
-            horizontal_start = i * size + i * margin
-            horizontal_end = horizontal_start + size
-
-            vertical_start = j * size + j * margin
-            vertical_end = vertical_start + size
-
-            results[horizontal_start:horizontal_end, vertical_start:vertical_end, :] = filter_image
-
-            # plt.imshow(filter_image)
-            # plt.show()
-            # plt.imshow(results)
-            # plt.show()
-
-            print(".%d" % (i * 8 + j))
-
-    plt.figure(figsize=(20, 20))
-    plt.imshow(results)
-
-    plt.show()
-
-
+#
 # def test_layer_filter():
 #     plt.imshow(generate_pattern(model=model, layer_name='block4_conv1', filter_index=0, size=64))
 #     plt.show()
@@ -396,6 +418,29 @@ def visualize_layer_filters(model, layer_name, size=64, epochs=15):
 #
 #     # cv2.imwrite("output_cat.jpg", composed_img)
 
-LAYER_NAME = 'block5_conv1'
-# visualize_layer(model_100, LAYER_NAME)
-visualize_layer_filters(model=model_100, layer_name=LAYER_NAME, epochs=15)
+layer_names = [
+    'Conv1',
+
+    'block_1_project', 'block_2_project',
+    'block_3_project', 'block_4_project', 'block_5_project',
+    'block_6_project', 'block_7_project', 'block_8_project', 'block_9_project',
+    'block_10_project', 'block_11_project', 'block_12_project',
+    'block_13_project', 'block_14_project', 'block_15_project',
+    'block_16_project',
+
+    'Conv_1',
+]
+
+filters_size = [
+    32,
+    24, 24,
+    32, 32, 32,
+    64, 64, 64, 64,
+    96, 96, 96,
+    160, 160, 160,
+    320,
+    1280,
+]
+
+for i in range(len(layer_names)):
+    visualize_layer_filters(model=model_100, layer_name=layer_names[i], epochs=15, filters_size=filters_size[i])
