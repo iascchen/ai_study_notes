@@ -10,8 +10,6 @@ import tensorflow.keras.backend as K
 from tensorflow.keras.applications import mobilenet_v2
 from tensorflow.python.keras.utils import plot_model
 
-# from tensorflow.keras.applications import vgg16
-
 base_path = "../../data"
 output_path = "../../output"
 images_dir = "%s/images" % base_path
@@ -19,8 +17,6 @@ images_dir = "%s/images" % base_path
 # define the model
 model_100 = mobilenet_v2.MobileNetV2(input_shape=None, alpha=1.0, include_top=True,
                                      weights='imagenet', input_tensor=None, pooling=None, classes=1000)
-
-# model_100 = vgg16.VGG16(weights='imagenet', include_top=False)
 
 model_100.summary()
 
@@ -42,60 +38,6 @@ with open(yaml_path, 'w') as fw:
 # Visualize Layer
 ##########################
 
-
-def normalize(x):
-    """utility function to normalize a tensor.
-
-    # Arguments
-        x: An input tensor.
-
-    # Returns
-        The normalized input tensor.
-    """
-    return x / (K.sqrt(K.mean(K.square(x))) + K.epsilon())
-
-
-def deprocess_image(x):
-    """utility function to convert a float array into a valid uint8 image.
-
-    # Arguments
-        x: A numpy-array representing the generated image.
-
-    # Returns
-        A processed numpy-array, which could be used in e.g. imshow.
-    """
-    # normalize tensor: center on 0., ensure std is 0.25
-    x -= x.mean()
-    x /= (x.std() + K.epsilon())
-    x *= 0.25
-
-    # clip to [0, 1]
-    x += 0.5
-    x = np.clip(x, 0, 1)
-
-    # convert to RGB array
-    x *= 255
-    if K.image_data_format() == 'channels_first':
-        x = x.transpose((1, 2, 0))
-    x = np.clip(x, 0, 255).astype('uint8')
-    return x
-
-
-def process_image(x, former):
-    """utility function to convert a valid uint8 image back into a float array.
-       Reverses `deprocess_image`.
-
-    # Arguments
-        x: A numpy-array, which could be used in e.g. imshow.
-        former: The former numpy-array.
-                Need to determine the former mean and variance.
-
-    # Returns
-        A processed numpy-array representing the generated image.
-    """
-    if K.image_data_format() == 'channels_first':
-        x = x.transpose((2, 0, 1))
-    return (x / 255 - 0.5) * 4 * former.std() + former.mean()
 
 
 # def visualize_layer(model,
@@ -272,7 +214,7 @@ def process_image(x, former):
 #     _draw_filters(processed_filters)
 
 ################
-# visualize conv layer filters
+# visualize Conv layer filters
 ################
 
 
@@ -282,7 +224,7 @@ def generate_pattern(model, layer_name, filter_index=0, size=150, epochs=15):
     loss = K.mean(layer_output[:, :, :, filter_index])
 
     grads = K.gradients(loss, model.input)[0]
-    grads /= (K.sqrt(K.mean(K.square(grads))) + 1e-5)
+    grads /= (K.sqrt(K.mean(K.square(grads))) + K.epsilon)
 
     iterate = K.function([model.input], [loss, grads])
     input_img_data = np.random.random((1, size, size, 3)) * 20 + 128.
@@ -443,4 +385,4 @@ filters_size = [
 ]
 
 for i in range(len(layer_names)):
-    visualize_layer_filters(model=model_100, layer_name=layer_names[i], epochs=15, filters_size=filters_size[i])
+    visualize_layer_filters(model=model_100, layer_name=layer_names[i], epochs=40, filters_size=filters_size[i])
