@@ -39,6 +39,34 @@ with open(yaml_path, 'w') as fw:
 ##########################
 
 
+# def normalize(x):
+#     """utility function to normalize a tensor.
+#
+#     # Arguments
+#         x: An input tensor.
+#
+#     # Returns
+#         The normalized input tensor.
+#     """
+#     return x / (K.sqrt(K.mean(K.square(x))) + K.epsilon())
+
+
+# def process_image(x, former):
+#     """utility function to convert a valid uint8 image back into a float array.
+#        Reverses `deprocess_image`.
+#
+#     # Arguments
+#         x: A numpy-array, which could be used in e.g. imshow.
+#         former: The former numpy-array.
+#                 Need to determine the former mean and variance.
+#
+#     # Returns
+#         A processed numpy-array representing the generated image.
+#     """
+#     if K.image_data_format() == 'channels_first':
+#         x = x.transpose((2, 0, 1))
+#     return (x / 255 - 0.5) * 4 * former.std() + former.mean()
+
 
 # def visualize_layer(model,
 #                     layer_name,
@@ -216,6 +244,31 @@ with open(yaml_path, 'w') as fw:
 ################
 # visualize Conv layer filters
 ################
+
+def deprocess_image(x):
+    """utility function to convert a float array into a valid uint8 image.
+
+    # Arguments
+        x: A numpy-array representing the generated image.
+
+    # Returns
+        A processed numpy-array, which could be used in e.g. imshow.
+    """
+    # normalize tensor: center on 0., ensure std is 0.25
+    x -= x.mean()
+    x /= (x.std() + K.epsilon())
+    x *= 0.25
+
+    # clip to [0, 1]
+    x += 0.5
+    x = np.clip(x, 0, 1)
+
+    # convert to RGB array
+    x *= 255
+    if K.image_data_format() == 'channels_first':
+        x = x.transpose((1, 2, 0))
+    x = np.clip(x, 0, 255).astype('uint8')
+    return x
 
 
 def generate_pattern(model, layer_name, filter_index=0, size=150, epochs=15):
