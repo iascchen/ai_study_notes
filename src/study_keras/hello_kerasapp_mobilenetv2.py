@@ -70,7 +70,7 @@ def generate_pattern(model, layer_name, filter_index=0, size=150, epochs=15):
     loss = K.mean(layer_output[:, :, :, filter_index])
 
     grads = K.gradients(loss, model.input)[0]
-    grads /= (K.sqrt(K.mean(K.square(grads))) + K.epsilon)
+    grads /= (K.sqrt(K.mean(K.square(grads))) + K.epsilon())
 
     iterate = K.function([model.input], [loss, grads])
     input_img_data = np.random.random((1, size, size, 3)) * 20 + 128.
@@ -113,38 +113,14 @@ def visualize_layer_filters(model, layer_name, filters_size=16, size=64, epochs=
     cv2.imwrite("%s/%s_filter.jpg" % (output_path, layer_name), results)
 
 
-layer_names = [
-    'Conv1',
-
-    'block_1_project', 'block_2_project',
-    'block_3_project', 'block_4_project', 'block_5_project',
-    'block_6_project', 'block_7_project', 'block_8_project', 'block_9_project',
-    'block_10_project', 'block_11_project', 'block_12_project',
-    'block_13_project', 'block_14_project', 'block_15_project',
-    'block_16_project',
-
-    'Conv_1',
-]
-
-filters_size = [
-    32,
-    24, 24,
-    32, 32, 32,
-    64, 64, 64, 64,
-    96, 96, 96,
-    160, 160, 160,
-    320,
-    1280,
-]
-
 # layer_names = [
 #     'Conv1',
 #
-#     'block_1_project',
-#     'block_3_project',
-#     'block_6_project',
-#     'block_10_project',
-#     'block_13_project',
+#     'block_1_project', 'block_2_project',
+#     'block_3_project', 'block_4_project', 'block_5_project',
+#     'block_6_project', 'block_7_project', 'block_8_project', 'block_9_project',
+#     'block_10_project', 'block_11_project', 'block_12_project',
+#     'block_13_project', 'block_14_project', 'block_15_project',
 #     'block_16_project',
 #
 #     'Conv_1',
@@ -152,16 +128,40 @@ filters_size = [
 #
 # filters_size = [
 #     32,
-#
-#     24,
-#     32,
-#     64,
-#     96,
-#     160,
+#     24, 24,
+#     32, 32, 32,
+#     64, 64, 64, 64,
+#     96, 96, 96,
+#     160, 160, 160,
 #     320,
-#
 #     1280,
 # ]
+
+layer_names = [
+    'Conv1',
+
+    'block_1_project',
+    'block_3_project',
+    'block_6_project',
+    'block_10_project',
+    'block_13_project',
+    'block_16_project',
+
+    'Conv_1',
+]
+
+filters_size = [
+    32,
+
+    24,
+    32,
+    64,
+    96,
+    160,
+    320,
+
+    1280,
+]
 
 for i in range(len(layer_names)):
     visualize_layer_filters(model=model_100, layer_name=layer_names[i], epochs=40, filters_size=filters_size[i])

@@ -10,7 +10,7 @@
 
 ## MobileNet v1
 
-[hello_kerasapp_mobilenet_v1.py](../../src/study_keras/hello_kerasapp_mobilenet_v1.py) 展示了基础的 MobileNet V1 进行图像分类的过程
+[hello_kerasapp_mobilenet_v1.py](../../src/study_keras/hello_kerasapp_mobilenetv1.py) 展示了基础的 MobileNet V1 进行图像分类的过程
 
 能够创建不同精度的模型
 
@@ -86,11 +86,93 @@
                         classes=1000)
                         
     model.summary()
+
+执行的时候需要先下载 Keras 预先计算好的 h5 模型，可能会比较慢。
     
 ## 网络层的可视化
     
-[hello_kerasapp_mobilenet_v2.py](../../src/study_keras/hello_kerasapp_mobilenet_v2.py) 增加了更多的对 MobileNet V2 网络层状态的观察。
+[hello_kerasapp_mobilenet_v2.py](../../src/study_keras/hello_kerasapp_mobilenetv2.py) 参考 Keras 官方的例子，对 MobileNet V2 的卷积神经网络中各层的 filter 进行可视化观察。
 
+Keras 官方提供了一个卷积层可视化的例子，[https://keras.io/examples/conv_filter_visualization/](https://keras.io/examples/conv_filter_visualization/)。但是，这个例子没法在 tensorflow.keras 实现中运行。
+
+下面的例子参考了 《Deep Learning with Python》 书中的实现，针对 MobileNet V2 做了卷积层的 filter 可视化。，不过做多仅仅显示前 64 个filter
+
+    def generate_pattern(model, layer_name, filter_index=0, size=150, epochs=15):
+        layer_output = model.get_layer(layer_name).output
+    
+        loss = K.mean(layer_output[:, :, :, filter_index])
+    
+        grads = K.gradients(loss, model.input)[0]
+        grads /= (K.sqrt(K.mean(K.square(grads))) + K.epsilon())
+    
+        iterate = K.function([model.input], [loss, grads])
+        input_img_data = np.random.random((1, size, size, 3)) * 20 + 128.
+    
+        step = 1
+        for i in range(epochs):
+            loss_value, grads_value = iterate([input_img_data])
+            input_img_data += grads_value * step
+    
+        img = input_img_data[0]
+        return deprocess_image(img)
+    
+    
+    def visualize_layer_filters(model, layer_name, filters_size=16, size=64, epochs=15):
+        margin = 3
+        results = np.zeros((8 * size + 7 * margin, 8 * size + 7 * margin, 3)).astype('uint8')
+    
+        # most display first 64 filters
+        for i in range(8):
+            for j in range(8):
+    
+                if (i * 8 + j) >= filters_size:
+                    break
+    
+                filter_image = generate_pattern(model, layer_name, filter_index=(i * 8 + j), size=size, epochs=epochs)
+    
+                horizontal_start = i * size + i * margin
+                horizontal_end = horizontal_start + size
+    
+                vertical_start = j * size + j * margin
+                vertical_end = vertical_start + size
+    
+                results[horizontal_start:horizontal_end, vertical_start:vertical_end, :] = filter_image
+                print(".%d" % (i * 8 + j))
+    
+        plt.figure(figsize=(20, 20))
+        plt.imshow(results)
+    
+        plt.show()
+        cv2.imwrite("%s/%s_filter.jpg" % (output_path, layer_name), results)
+
+调用方式很简单。
+
+    layer_names = [
+        'Conv1',
+    
+        'block_1_project', 'block_2_project',
+        'block_3_project', 'block_4_project', 'block_5_project',
+        'block_6_project', 'block_7_project', 'block_8_project', 'block_9_project',
+        'block_10_project', 'block_11_project', 'block_12_project',
+        'block_13_project', 'block_14_project', 'block_15_project',
+        'block_16_project',
+    
+        'Conv_1',
+    ]
+    
+    filters_size = [
+        32,
+        24, 24,
+        32, 32, 32,
+        64, 64, 64, 64,
+        96, 96, 96,
+        160, 160, 160,
+        320,
+        1280,
+    ]
+    
+    for i in range(len(layer_names)):
+        visualize_layer_filters(model=model_100, layer_name=layer_names[i], epochs=40, filters_size=filters_size[i])
 
 
 

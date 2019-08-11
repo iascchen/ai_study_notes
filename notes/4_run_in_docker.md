@@ -78,6 +78,7 @@ Clone 此项目
     
     $ cd ai_study_notes/src
     ai_study_notes/src$ ls
+    ai_study_notes/src$ pip install Cython
     ai_study_notes/src$ pip install -r requirements.txt
     
 验证代码
