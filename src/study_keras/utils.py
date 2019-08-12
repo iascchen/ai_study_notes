@@ -95,6 +95,8 @@ def visualize_layer_filters(model, layer_name, size=64, epochs=15):
     print("%s filter length %d" % (layer_name, index_len))
 
     row = math.ceil(index_len / 8.)
+    row = 8 if row > 8 else row  # 最多显示前 64 个
+
     vol = 8
 
     margin = 3
