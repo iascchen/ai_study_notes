@@ -1,12 +1,5 @@
-##########################
-# Reference Link
-# https://keras.io/examples/conv_filter_visualization/
-##########################
-
 from tensorflow.keras.applications import mobilenet_v2
 from tensorflow.python.keras.utils import plot_model
-
-from src.study_keras.utils import visualize_layer_filters
 
 base_path = "../../data"
 output_path = "../../output"
@@ -30,7 +23,3 @@ yaml_path = "%s/mobilenet_v2.model.yaml" % output_path
 yaml_string = model_100.to_yaml()
 with open(yaml_path, 'w') as fw:
     fw.write(yaml_string)
-
-convLayers = [layer.name for layer in model_100.layers if (layer.__class__.__name__ == 'Conv2D')]
-for i in range(len(convLayers)):
-    visualize_layer_filters(model=model_100, layer_name=convLayers[i], epochs=40)
