@@ -76,10 +76,13 @@ def generate_pattern(input_img, layer_output, filter_index=0, size=150, epochs=2
     step = 1
     for i in range(epochs):
         loss_value, grads_value = iterate([input_img_data])
-        input_img_data += grads_value * step
+        input_img_data += grads_value * step  # ?? why input + grads ??
 
         if loss_value <= K.epsilon():
-            return None
+            if i == 0:
+                return None
+            else:
+                break
 
     return deprocess_image(input_img_data[0])
 
