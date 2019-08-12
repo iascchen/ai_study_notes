@@ -1,6 +1,6 @@
 from tensorflow.keras.applications import mobilenet_v2
 
-from src.study_keras.utils import visualize_layer_filters
+from utils import visualize_layer_filters
 
 if __name__ == '__main__':
     base_path = "../../data"
