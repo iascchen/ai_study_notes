@@ -97,9 +97,9 @@ def visualize_layer_filters(model, layer_name, size=64, epochs=15):
         index_len = layer_output.shape.as_list()[-1]
     print("%s filter length %d" % (layer_name, index_len))
 
-    row = math.ceil(index_len / 8.)
-    row = 8 if row > 8 else row  # most display first 64 filterss
     vol = 8
+    row = math.ceil(index_len / vol)
+    row = 8 if row > 8 else row  # most display first 64 filterss
 
     margin = 3
     results = np.zeros((row * size + (row - 1) * margin, vol * size + (vol - 1) * margin, 3)).astype('uint8')
@@ -124,8 +124,58 @@ def visualize_layer_filters(model, layer_name, size=64, epochs=15):
 
             print(".%d" % (i * vol + j))
 
+    plt.title(layer_name)
     plt.figure(figsize=(20, 20))
     plt.imshow(results)
 
     plt.show()
     cv2.imwrite("%s/%s.%s_filter.jpg" % (output_path, model_name, layer_name), results)
+
+
+def visualize_activations(_pre, _layers_names, _activations, result_indexs=0):
+    print(_layers_names)
+
+    images_per_row = 8
+    margin = 1
+
+    for layer_name, layer_activation in zip(_layers_names, _activations):
+        if K.image_data_format() == 'channels_first':
+            n_features = layer_activation.shape[1]
+            size = layer_activation.shape[-1]
+        else:
+            n_features = layer_activation.shape[-1]
+            size = layer_activation.shape[1]
+
+        n_cols = math.ceil(n_features / images_per_row)
+        n_cols = 8 if n_cols > 8 else n_cols  # most display first 64 filterss
+
+        display_grid = np.zeros((size * n_cols + (n_cols - 1) * margin,
+                                 size * images_per_row + (images_per_row - 1) * margin)).astype('uint8')
+
+        for col in range(n_cols):
+            for row in range(images_per_row):
+                channel_image = layer_activation[result_indexs, :, :, col * images_per_row + row]
+                channel_image -= channel_image.mean()
+                channel_image /= channel_image.std()
+                channel_image *= 64
+                channel_image += 128
+
+                channel_image = np.clip(channel_image, 0, 255).astype('uint8')
+
+                horizontal_start = col * size + col * margin
+                horizontal_end = horizontal_start + size
+
+                vertical_start = row * size + row * margin
+                vertical_end = vertical_start + size
+
+                display_grid[horizontal_start:horizontal_end, vertical_start:vertical_end] = channel_image
+
+        scale = 1. / size
+        plt.figure(figsize=(scale * display_grid.shape[1], scale * display_grid.shape[0]))
+
+        plt.title(layer_name)
+        plt.grid(False)
+        plt.imshow(display_grid, aspect='auto', cmap='viridis')
+        plt.show()
+
+        cv2.imwrite("%s/%s.%s_actication.jpg" % (output_path, _pre, layer_name), display_grid)
