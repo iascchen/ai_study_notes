@@ -86,6 +86,7 @@ def generate_pattern(layer_output, input_img, filter_index=0, size=150, epochs=2
 
 def visualize_layer_filters(model, layer_name, size=64, epochs=15):
     layer_output = model.get_layer(layer_name).output
+    model_name = model.name
 
     if K.image_data_format() == 'channels_first':
         index_len = layer_output.shape.as_list()[1]
@@ -122,4 +123,4 @@ def visualize_layer_filters(model, layer_name, size=64, epochs=15):
     plt.imshow(results)
 
     plt.show()
-    cv2.imwrite("%s/%s_filter.jpg" % (output_path, layer_name), results)
+    cv2.imwrite("%s/%s.%s_filter.jpg" % (output_path, model_name, layer_name), results)
