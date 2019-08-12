@@ -6,8 +6,6 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.python.keras.applications import imagenet_utils
 from tensorflow.python.keras.utils import plot_model
 
-from src.study_keras.utils import visualize_layer_filters
-
 '''
 # different alpha 
 
@@ -74,7 +72,6 @@ assert "Egyptian_cat" in [item[1] for item in results[0]]
 # use plot_model need graphviz be installed
 model_plot_path = "%s/hello_kerasapp_mobilenet_model_plot.png" % output_path
 plot_model(model_100, to_file=model_plot_path, show_shapes=True, show_layer_names=True)
-
 
 yaml_path = "%s/mobilenet_v1.model.yaml" % output_path
 yaml_string = model_100.to_yaml()
