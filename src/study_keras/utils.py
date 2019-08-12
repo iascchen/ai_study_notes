@@ -52,7 +52,7 @@ def deprocess_image(x):
     return x
 
 
-def generate_pattern(layer_output, input_img, filter_index=0, size=150, epochs=20):
+def generate_pattern(input_img, layer_output, filter_index=0, size=150, epochs=20):
     if K.image_data_format() == 'channels_first':
         loss = K.mean(layer_output[:, filter_index, :, :])
     else:
@@ -79,7 +79,7 @@ def generate_pattern(layer_output, input_img, filter_index=0, size=150, epochs=2
         input_img_data += grads_value * step
 
         if loss_value <= K.epsilon():
-            continue
+            return None
 
     return deprocess_image(input_img_data[0])
 
@@ -95,30 +95,30 @@ def visualize_layer_filters(model, layer_name, size=64, epochs=15):
     print("%s filter length %d" % (layer_name, index_len))
 
     row = math.ceil(index_len / 8.)
-    row = 8 if row > 8 else row  # 最多显示前 64 个
-
+    row = 8 if row > 8 else row  # most display first 64 filterss
     vol = 8
 
     margin = 3
     results = np.zeros((row * size + (row - 1) * margin, vol * size + (vol - 1) * margin, 3)).astype('uint8')
 
-    # most display first 64 filters
     for i in range(row):
         for j in range(vol):
 
             if (i * vol + j) >= index_len:
                 break
 
-            filter_image = generate_pattern(layer_output, model.input, filter_index=(i * vol + j), size=size,
+            filter_image = generate_pattern(model.input, layer_output, filter_index=(i * vol + j), size=size,
                                             epochs=epochs)
 
-            horizontal_start = i * size + i * margin
-            horizontal_end = horizontal_start + size
+            if filter_image is not None:
+                horizontal_start = i * size + i * margin
+                horizontal_end = horizontal_start + size
 
-            vertical_start = j * size + j * margin
-            vertical_end = vertical_start + size
+                vertical_start = j * size + j * margin
+                vertical_end = vertical_start + size
 
-            results[horizontal_start:horizontal_end, vertical_start:vertical_end, :] = filter_image
+                results[horizontal_start:horizontal_end, vertical_start:vertical_end, :] = filter_image
+
             print(".%d" % (i * vol + j))
 
     plt.figure(figsize=(20, 20))
