@@ -197,7 +197,7 @@ def generate_heat_map(_model, input_image, layer_name, n_features):
     heat_map = np.mean(conv_layer_output_value, axis=-1)
 
     heat_map = np.maximum(heat_map, 0)
-    heat_map /= np.max(heat_map) + K.epsilon()
+    heat_map /= np.max(heat_map)
 
     return heat_map
 
