@@ -31,7 +31,7 @@ if __name__ == '__main__':
     layers_outputs = [layer.output for layer in model.layers if (layer.__class__.__name__ == 'Conv2D')]
 
     # display lastest %activation_len% activations
-    activation_len = -6
+    activation_len = 0
 
     activation_model = Model(inputs=model.input, outputs=layers_outputs[activation_len:])
     activation_model.summary()

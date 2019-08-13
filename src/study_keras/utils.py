@@ -179,3 +179,33 @@ def visualize_activations(_pre, _layers_names, _activations, result_indexs=0):
         plt.show()
 
         cv2.imwrite("%s/%s.%s_actication.jpg" % (output_path, _pre, layer_name), display_grid)
+
+
+def generate_heat_map(_model, input_image, layer_name, n_features):
+    output = _model.output[:, n_features]
+    selected_layer = _model.get_layer(layer_name)
+
+    grads = K.gradients(output, selected_layer.output)[0]
+    pooled_grads = K.mean(grads, axis=(0, 1, 2))
+
+    iterate = K.function([_model.input], [pooled_grads, selected_layer.output[0]])
+    pooled_grads_value, conv_layer_output_value = iterate([input_image])
+
+    for i in range(n_features):
+        conv_layer_output_value[:, :, i] *= pooled_grads_value[i]
+
+    heat_map = np.mean(conv_layer_output_value, axis=-1)
+
+    heat_map = np.maximum(heat_map, 0)
+    heat_map /= np.max(heat_map) + K.epsilon()
+
+    return heat_map
+
+
+def merge_image_heat_map(input_image, input_heat_map):
+    heat_map = cv2.resize(input_heat_map, (input_image.shape[1], input_image.shape[0]))
+    heat_map = np.uint8(255 * heat_map)
+    heat_map = cv2.applyColorMap(heat_map, cv2.COLORMAP_JET)
+
+    superimposed_img = np.uint8(heat_map * 0.4 + 255 * input_image)
+    return superimposed_img
