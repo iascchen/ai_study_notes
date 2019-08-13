@@ -23,7 +23,7 @@ if __name__ == '__main__':
         return pImg
 
 
-    test_img_path = '%s/Abyssinian_2.jpg' % images_dir
+    test_img_path = '%s/Abyssinian_3.jpg' % images_dir
     pImg = process_image(test_img_path)
 
     # define the model
