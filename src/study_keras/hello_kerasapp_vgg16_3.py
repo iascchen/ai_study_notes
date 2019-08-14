@@ -27,15 +27,14 @@ if __name__ == '__main__':
     model = vgg16.VGG16(include_top=True, weights='imagenet', input_tensor=None, input_shape=None, pooling=None,
                         classes=1000)
 
-    layers_names = [layer.name for layer in model.layers if (layer.__class__.__name__ == 'Conv2D')]
-    layers_outputs = [layer.output for layer in model.layers if (layer.__class__.__name__ == 'Conv2D')]
+    # display top %activation_top_layers% activations
+    top_layers = 0
+    layers_outputs = [layer.output for layer in model.layers if (layer.__class__.__name__ == 'Conv2D')][top_layers:]
+    layers_names = [layer.name for layer in layers_outputs]
 
-    # display lastest %activation_len% activations
-    activation_len = 0
-
-    activation_model = Model(inputs=model.input, outputs=layers_outputs[activation_len:])
+    activation_model = Model(inputs=model.input, outputs=layers_outputs)
     activation_model.summary()
 
     results = activation_model.predict(pImg)
 
-    visualize_activations("vgg16_Abyssinian", layers_names[activation_len:], results, result_indexs=(len(pImg) - 1))
+    visualize_activations("vgg16_Abyssinian", layers_names, results, result_indexs=0)
