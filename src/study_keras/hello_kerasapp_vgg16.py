@@ -12,7 +12,7 @@ from tensorflow.python.keras.applications import imagenet_utils
 
 base_path = "../../data"
 output_path = "../../output"
-images_dir = "%s/images" % base_path
+images_dir = "%s/pets/images" % base_path
 
 
 # process an image to be model friendly

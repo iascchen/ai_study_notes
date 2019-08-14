@@ -3,7 +3,7 @@ from tensorflow.python.keras.utils import plot_model
 
 base_path = "../../data"
 output_path = "../../output"
-images_dir = "%s/images" % base_path
+images_dir = "%s/pets/images" % base_path
 
 # define the model
 model_100 = mobilenet_v2.MobileNetV2(input_shape=None, alpha=1.0, include_top=True,

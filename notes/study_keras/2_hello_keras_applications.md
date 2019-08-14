@@ -3,6 +3,8 @@
 下面的例子使用了宠物图像标注数据集，这些数据放置于 /data 目录下：
 
     $ cd data
+    $ mkdir pets
+    $ cd pets
     $ wget http://www.robots.ox.ac.uk/~vgg/data/pets/data/images.tar.gz
     $ wget http://www.robots.ox.ac.uk/~vgg/data/pets/data/annotations.tar.gz
     $ tar -xvf images.tar.gz

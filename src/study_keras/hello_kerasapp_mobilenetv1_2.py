@@ -5,7 +5,7 @@ from utils import visualize_layer_filters
 if __name__ == '__main__':
     base_path = "../../data"
     output_path = "../../output"
-    images_dir = "%s/images" % base_path
+    images_dir = "%s/pets/images" % base_path
 
     # define the model
     model_100 = mobilenet.MobileNet(input_shape=None, alpha=1.0, include_top=True,

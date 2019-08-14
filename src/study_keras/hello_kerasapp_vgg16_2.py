@@ -5,7 +5,7 @@ from utils import visualize_layer_filters
 if __name__ == '__main__':
     base_path = "../../data"
     output_path = "../../output"
-    images_dir = "%s/images" % base_path
+    images_dir = "%s/pets/images" % base_path
 
     # define the model
     model = vgg16.VGG16(include_top=True, weights='imagenet', input_tensor=None, input_shape=None, pooling=None,

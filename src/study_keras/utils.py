@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow.keras.backend as K
 
-base_path = "../../data"
+# base_path = "../../data"
 output_path = "../../output"
-images_dir = "%s/images" % base_path
+# images_dir = "%s/pets/images" % base_path
 
 
 ##########################

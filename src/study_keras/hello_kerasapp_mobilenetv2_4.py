@@ -11,7 +11,7 @@ from utils import generate_heat_map, merge_image_heat_map
 if __name__ == '__main__':
     base_path = "../../data"
     output_path = "../../output"
-    images_dir = "%s/images" % base_path
+    images_dir = "%s/pets/images" % base_path
 
 
     # process an image to be model friendly
