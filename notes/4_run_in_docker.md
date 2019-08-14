@@ -81,8 +81,20 @@ Clone 此项目
     ai_study_notes/src$ pip install Cython
     ai_study_notes/src$ pip install -r requirements.txt
     
+不清楚为什么，安装 tensorflowjs 会重新安装 tensorflow 包，导致 GPU 支持不可用。解决办法是强制重新安装 Tensorflow-gpu。
+
+    pip install --force-reinstall tensorflow-gpu==1.14.0
+    
 验证代码
 
     # python hello_gpu.py
-    GPU is ready : True
+    GPU is ready : True    
     
+但是，执行 hello_keras_mobilenet_v1.py 还是会报错，说 cuDNN 不能创建。
+
+在 Docker 内重新安装 cuda 和 cuDNN，试一下
+
+    $ apt-get install --no-install-recommends \
+        cuda-10-0 \
+        libcudnn7=7.6.0.64-1+cuda10.0  \
+        libcudnn7-dev=7.6.0.64-1+cuda10.0
