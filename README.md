@@ -16,9 +16,8 @@ Ubuntu 18.04, Tensorflow 1.14.0
 ### 初识 Keras
 
 * [最简单的 MNIST 数字识别](notes/study_keras/1_hello_mnist.md)
-* 定义自己的网络
 
 ### 图像分类
 
 * [使用 tf.keras.applications 实现图像分类和可视化观察](notes/study_keras/2_hello_keras_applications.md)
-* 使用 tf.keras.applications 实现图像分类的迁移学习
+* [使用 tf.keras.applications 实现图像分类的迁移学习](notes/study_keras/3_hello_transfer_learning.md)

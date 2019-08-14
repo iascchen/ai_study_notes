@@ -35,21 +35,21 @@ if __name__ == '__main__':
     # x = keras.layers.Dropout(0.2)(x)
     # preds = keras.layers.Dense(5, activation='softmax')(x)  # final layer with softmax activation
     # model = keras.Model(inputs=base_model.input, outputs=preds)
-    #
-    # layers_names = [layer.name for layer in model.layers]
-    # print("All layers:", layers_names)
-    #
-    # layers_names = [layer.name for layer in model.layers if layer.trainable is True]
-    # print("Trainable layers 1:", layers_names)
-    #
-    # trainable_top_layers = -8
-    # # for layer in model.layers[:trainable_top_layers]:
-    # #     layer.trainable = False
-    # for layer in model.layers[trainable_top_layers:]:
-    #     layer.trainable = True
-    #
-    # layers_names = [layer.name for layer in model.layers if layer.trainable is True]
-    # print("Trainable layers 2:", layers_names)
+
+    layers_names = [layer.name for layer in model.layers]
+    print("All layers:", layers_names)
+
+    layers_names = [layer.name for layer in model.layers if layer.trainable is True]
+    print("Trainable layers 1:", layers_names)
+
+    trainable_top_layers = -8
+    # for layer in model.layers[:trainable_top_layers]:
+    #     layer.trainable = False
+    for layer in model.layers[trainable_top_layers:]:
+        layer.trainable = True
+
+    layers_names = [layer.name for layer in model.layers if layer.trainable is True]
+    print("Trainable layers 2:", layers_names)
 
     model.summary()
 
