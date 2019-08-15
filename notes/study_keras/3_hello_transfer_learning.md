@@ -1,6 +1,6 @@
 # 迁移学习
 
-本届内容会用到以下数据集：
+本节内容会用到以下数据集：
 
     $ cd data
     $ wget https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
@@ -123,7 +123,7 @@
 在这个模型里，最后增加的 5 层都是需要重新训练的。而因为设置了 base_model.trainable = False ，所以 base_model 的权重不会重复训练。
 
 如果需要对 base_model 进行更细节的 trainable 设置，可以参考下面的代码，不同层级进行 layer.trainable = True 的设定。
-例如：如果需要对 MobileNet v2 的最后 4 层进行微调，可以使用类似下面的代码：
+例如：如果需要对 MobileNet v2 的最后 3 层进行微调，可以使用类似下面的代码：
 
     # adjust base model,
     trainable_base_layers = -3
@@ -189,6 +189,29 @@
     
 ## 使用 estimator 进行训练
 
+Estimator 是一种可极大地简化机器学习编程的高阶 TensorFlow API。
+Estimator 会封装下列操作：训练、评估、预测、导出以供使用。
 
+Estimator 具有下列优势：可以在本地主机上或分布式多服务器环境中运行基于 Estimator 的模型，而无需更改模型。
+此外，可以在 CPU、GPU 或 TPU 上运行基于 Estimator 的模型，而无需重新编码模型。
 
-[hello_transfer_learning_2.py](../../src/study_keras/hello_transfer_learning_2.py) 展示了迁移学习的基本过程。
+[hello_transfer_learning_2.py](../../src/study_keras/hello_transfer_learning_2.py) 展示了迁移学习模型在 Estimator 上运行的基本过程。
+
+    ###################
+    # Use tensorflow estimator
+    ###################
+
+    est_model = keras.estimator.model_to_estimator(keras_model=keras_model)
+
+    train_x = []
+    train_y = []
+    for inputs_batch, labels_batch in validation_generator:
+        train_x.append(inputs_batch)
+        train_y.append(labels_batch)
+
+    train_input_fn = tf.estimator.inputs.numpy_input_fn(x=train_x, y=train_y, num_epochs=1, shuffle=False)
+
+    my_listener = MyListener()
+
+    # To train, we call Estimator's train function:
+    est_model.train(input_fn=train_input_fn, steps=5, saving_listeners=my_listener)

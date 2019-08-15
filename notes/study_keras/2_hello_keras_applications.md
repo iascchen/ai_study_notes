@@ -95,7 +95,7 @@
 
 Keras 官方提供了一个卷积层可视化的例子，[https://keras.io/examples/conv_filter_visualization/](https://keras.io/examples/conv_filter_visualization/)。但是，这个例子没法在 tensorflow.keras 实现中运行。
 
-下面的例子参考了 《Deep Learning with Python》 书中的实现，针对 MobileNet V2 做了卷积层的 filter 可视化。，不过做多仅仅显示前 64 个filter
+下面的例子参考了 《Deep Learning with Python》 书中的实现，针对 MobileNet V2 做了卷积层的 filter 可视化。，不过最多仅仅显示前 64 个filter
 
     def normalize(x):
         """utility function to normalize a tensor.
