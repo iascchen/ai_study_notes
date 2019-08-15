@@ -1,4 +1,3 @@
-import numpy as np
 from tensorflow import keras
 from tensorflow.keras.applications import mobilenet_v2
 from tensorflow.python.keras.preprocessing.image import ImageDataGenerator
@@ -65,55 +64,61 @@ if __name__ == '__main__':
     # define the model
     base_model = mobilenet_v2.MobileNetV2(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
     base_model.trainable = False
-    base_model.summary()
 
     ###################
     # Adjust layers to transfer learning
     ###################
 
-    # ###################
-    # # Method 1
-    #
-    # model_name = "mobilenetv2_transfer_seq"
-    #
-    # model = keras.Sequential([
-    #     base_model,
-    #     keras.layers.GlobalAveragePooling2D(),
-    #     keras.layers.Dense(1024, activation='relu'),
-    #     keras.layers.Dense(512, activation='relu'),
-    #     keras.layers.Dropout(0.2),
-    #     keras.layers.Dense(5, activation='softmax')
-    # ])
+    ###################
+    # Method 1
 
-    # # adjust base model,
+    model_name = "mobilenetv2_transfer_seq"
+
+    model = keras.Sequential([
+        base_model,
+        keras.layers.GlobalAveragePooling2D(),
+        keras.layers.Dense(1024, activation='relu'),
+        keras.layers.Dense(512, activation='relu'),
+        keras.layers.Dropout(0.2),
+        keras.layers.Dense(5, activation='softmax')
+    ])
+
+    # # adjust base model
+    # base_model.trainable = True
+    #
     # trainable_base_layers = -3
-    # for layer in base_model.layers[trainable_base_layers:]:
-    #     layer.trainable = True
-    #
-    # layers_names = [layer.name for layer in base_model.layers if layer.trainable is True]
-    # print("base_model trainable layers:", layers_names)
-    #
-    # layers_names = [layer.name for layer in model.layers if layer.trainable is True]
-    # print("model trainable layers:", layers_names)
+    # for layer in base_model.layers[:trainable_base_layers]:
+    #     layer.trainable = False
 
-    ##################
-    # Method 2
-
-    model_name = "mobilenetv2_transfer_model"
-
-    x = base_model.get_layer('block_16_project_BN').output
-    x = keras.layers.Conv2D(1280, kernel_size=(1, 1))(x)
-    x = keras.layers.BatchNormalization()(x)
-    x = keras.layers.ReLU()(x)
-    x = keras.layers.Flatten()(x)
-    preds = keras.layers.Dense(5, activation='softmax')(x)  # final layer with softmax activation
-    model = keras.Model(inputs=base_model.input, outputs=preds)
-
-    layers_names = [layer.name for layer in model.layers]
-    print("All layers:", layers_names)
+    layers_names = [layer.name for layer in base_model.layers if layer.trainable is True]
+    print("base_model trainable layers:", layers_names)
 
     layers_names = [layer.name for layer in model.layers if layer.trainable is True]
-    print("Trainable layers:", layers_names)
+    print("model trainable layers:", layers_names)
+
+    # ##################
+    # # Method 2
+    #
+    # model_name = "mobilenetv2_transfer_model"
+    #
+    # x = base_model.get_layer('block_16_project_BN').output
+    # x = keras.layers.Conv2D(1280, kernel_size=(1, 1))(x)
+    # x = keras.layers.BatchNormalization()(x)
+    # x = keras.layers.ReLU()(x)
+    # x = keras.layers.Flatten()(x)
+    # preds = keras.layers.Dense(5, activation='softmax')(x)  # final layer with softmax activation
+    # model = keras.Model(inputs=base_model.input, outputs=preds)
+    #
+    # layers_names = [layer.name for layer in model.layers]
+    # print("All layers:", layers_names)
+    #
+    # # # adjust model for more trainable layer
+    # # trainable_layers = -11
+    # # for layer in model.layers[trainable_layers:]:
+    # #     layer.trainable = True
+    #
+    # layers_names = [layer.name for layer in model.layers if layer.trainable is True]
+    # print("Trainable layers:", layers_names)
 
     #####################
     # setting callback to fit

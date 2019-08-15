@@ -92,7 +92,7 @@ Clone 此项目
     
 但是，执行 hello_keras_mobilenet_v1.py 还是会报错，说 cuDNN 不能创建。
 
-在 Docker 内重新安装 cuda 和 cuDNN，试一下
+在 Docker 内重新安装 cuda 和 cuDNN，试一下（暂时不起作用，还要再看看）
 
     $ apt-get install --no-install-recommends \
         cuda-10-0 \

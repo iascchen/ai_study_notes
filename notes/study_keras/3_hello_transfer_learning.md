@@ -122,13 +122,15 @@
    
 在这个模型里，最后增加的 5 层都是需要重新训练的。而因为设置了 base_model.trainable = False ，所以 base_model 的权重不会重复训练。
 
-如果需要对 base_model 进行更细节的 trainable 设置，可以参考下面的代码，不同层级进行 layer.trainable = True 的设定。
-例如：如果需要对 MobileNet v2 的最后 3 层进行微调，可以使用类似下面的代码：
+如果需要对 base_model 进行更细节的 trainable 设置，可以参考下面的代码，现将 base_model.trainable = True 打开，然后，对不需要训练的层级设置 layer.trainable = False 。
+例如：如果仅需要对 MobileNet v2 的最后 3 层进行训练微调，可以使用类似下面的代码：
 
-    # adjust base model,
+    # adjust base model
+    base_model.trainable = True
+
     trainable_base_layers = -3
-    for layer in base_model.layers[trainable_base_layers:]:
-        layer.trainable = True
+    for layer in base_model.layers[:trainable_base_layers]:
+        layer.trainable = False
 
     layers_names = [layer.name for layer in base_model.layers if layer.trainable is True]
     print("base_model trainable layers:", layers_names)
@@ -139,6 +141,12 @@
 修改模型 trainable 之后，在进行训练之前，请务必对模型进行 compile，以使设定生效。请注意，此处的 loss 选择和数据集有关。
 
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.summary()
+
+得到的结果为，Trainable params 为 2,251,269：
+
+    base_model trainable layers: ['Conv_1', 'Conv_1_bn', 'out_relu']
+    model trainable layers: ['mobilenetv2_1.00_224', 'global_average_pooling2d', 'dense', 'dense_1', 'dropout', 'dense_2']
 
 ### 方法二，使用在 keras.Model 扩展模型。
 
@@ -163,9 +171,22 @@
         
     layers_names = [layer.name for layer in model.layers]
     print("All layers:", layers_names)
+    
+此时，还可以通过设置各层的 trainable = True 来调整原来 MobileNet V2 中的层次。
+    
+    # adjust model for more trainable layer
+    trainable_layers = -11
+    for layer in model.layers[trainable_layers:]:
+        layer.trainable = True
 
     layers_names = [layer.name for layer in model.layers if layer.trainable is True]
     print("Trainable layers:", layers_names)
+
+得到的可训练层如下，Trainable params 为 1,045,445：
+
+    Trainable layers: ['block_16_expand_relu', 'block_16_depthwise', 'block_16_depthwise_BN', 
+     'block_16_depthwise_relu', 'block_16_project', 'block_16_project_BN', 
+     'conv2d', 'batch_normalization', 're_lu', 'flatten', 'dense']
     
 ## 训练
 
@@ -194,6 +215,8 @@ Estimator 会封装下列操作：训练、评估、预测、导出以供使用�
 
 Estimator 具有下列优势：可以在本地主机上或分布式多服务器环境中运行基于 Estimator 的模型，而无需更改模型。
 此外，可以在 CPU、GPU 或 TPU 上运行基于 Estimator 的模型，而无需重新编码模型。
+
+**这个例子可以使用到GPU运算！！！**
 
 [hello_transfer_learning_2.py](../../src/study_keras/hello_transfer_learning_2.py) 展示了迁移学习模型在 Estimator 上运行的基本过程。
 
