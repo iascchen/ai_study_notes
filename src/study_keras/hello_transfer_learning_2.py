@@ -46,6 +46,8 @@ if __name__ == '__main__':
     ###################
 
     base_model = mobilenet_v2.MobileNetV2(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+    base_model.trainable = False
+
     keras_model = keras.Sequential([
         base_model,
         keras.layers.GlobalAveragePooling2D(),
