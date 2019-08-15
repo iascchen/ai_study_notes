@@ -16,13 +16,14 @@ if __name__ == '__main__':
                    'Ankle boot']
 
     model = keras.models.Sequential([
-        keras.layers.Conv2D(16, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)),
-        keras.layers.Conv2D(32, kernel_size=(3, 3), activation='relu'),
+        keras.layers.Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(28, 28, 1)),
         keras.layers.MaxPooling2D(pool_size=(2, 2)),
-        keras.layers.Conv2D(32, kernel_size=(3, 3), activation='relu'),
+        keras.layers.Conv2D(64, kernel_size=(3, 3), activation='relu'),
+        keras.layers.MaxPooling2D(pool_size=(2, 2)),
+        keras.layers.Conv2D(64, kernel_size=(3, 3), activation='relu'),
 
         keras.layers.Flatten(),
-        keras.layers.Dense(128, activation='relu'),
+        keras.layers.Dense(64, activation='relu'),
         keras.layers.Dropout(0.2),
         keras.layers.Dense(10, activation='softmax')
     ])

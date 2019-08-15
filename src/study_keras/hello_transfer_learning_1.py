@@ -1,5 +1,5 @@
 import numpy as np
-import tensorflow.keras as keras
+from tensorflow import keras
 from tensorflow.keras.applications import mobilenet_v2
 from tensorflow.keras.preprocessing import image
 
@@ -7,11 +7,14 @@ if __name__ == '__main__':
     base_path = "../../data"
     output_path = "../../output"
     images_dir = "%s/flower_photos" % base_path
+    images_dir_2 = "%s/pets/images" % base_path
 
     #######################
     # load model
     #######################
-    h5_path = "%s/mobilenetv2_transfer.h5" % output_path
+    h5_path = "%s/mobilenetv2_transfer_seq.h5" % output_path
+    # h5_path = "%s/mobilenetv2_transfer_model.h5" % output_path
+
     loaded_model = keras.models.load_model(h5_path)
 
 
@@ -24,9 +27,17 @@ if __name__ == '__main__':
 
 
     # process the test image
+    # test_img_path = '%s/Abyssinian_1.jpg' % images_dir_2
+    # pImg = process_image(test_img_path)
+    #
+    # predictions = loaded_model.predict(pImg)
+    # predictions_class = np.argmax(predictions)
+    # print(predictions_class)
+
     test_img_path = '%s/roses/99383371_37a5ac12a3_n.jpg' % images_dir
     pImg = process_image(test_img_path)
 
     predictions = loaded_model.predict(pImg)
+    print(predictions)
     predictions_class = np.argmax(predictions)
     print(predictions_class)

@@ -2,98 +2,193 @@
 
 本届内容会用到以下数据集：
 
-    wget https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
-    tar -xvf flower_photos.tgz
+    $ cd data
+    $ wget https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
+    $ tar -xvf flower_photos.tgz
+
+[hello_transfer_learning.py](../../src/study_keras/hello_transfer_learning.py) 展示了迁移学习的基本过程。
+
+## 使用 ImageDataGenerator 创建训练和检验
+
+### 方法一，class_mode='categorical'
+
+    # Method 1: use categorical
+    train_datagen = ImageDataGenerator(preprocessing_function=mobilenet_v2.preprocess_input,
+                                       validation_split=0.2)
+    train_generator = train_datagen.flow_from_directory(images_dir, target_size=(224, 224),
+                                                        color_mode='rgb', batch_size=32, shuffle=True,
+                                                        class_mode='categorical', subset='training')
+    validation_generator = train_datagen.flow_from_directory(images_dir, target_size=(224, 224),
+                                                             color_mode='rgb', batch_size=32, shuffle=True,
+                                                             class_mode='categorical', subset='validation')
+
+创建训练数据。传递的 validation_split=0.2 参数用于创建训练集和验证集。
+    
+    train_datagen = ImageDataGenerator(preprocessing_function=mobilenet_v2.preprocess_input,
+                                       validation_split=0.2)
+                                           
+使用 subset='training' 获得训练集。
+                                           
+    train_generator = train_datagen.flow_from_directory(images_dir, target_size=(224, 224),
+                                                        color_mode='rgb', batch_size=32, shuffle=True,
+                                                        class_mode='categorical', subset='training')
+    step_size_train = train_generator.n // train_generator.batch_size                                                   
+                                                            
+使用 subset='validation' 获得验证集。
+
+    validation_generator = train_datagen.flow_from_directory(images_dir, target_size=(224, 224),
+                                                             color_mode='rgb', batch_size=32, shuffle=True,
+                                                             class_mode='categorical', subset='validation')
+    
+    step_size_validation = validation_generator.n // validation_generator.batch_size
+
+因为此处使用的 class_mode='categorical', 所以，模型 compile 时候，需要使用 loos = 'categorical_crossentropy' 算法。
+
+    loss_alg = 'categorical_crossentropy'
+
+可以用下面的代码检查一下生成的图像数据
+
+    # show data format of train_generator and validation_generator
+    i = 0
+    for inputs_batch, labels_batch in validation_generator:
+        if i < 1:
+            print(inputs_batch)
+            print(labels_batch)
+            i += 1
+        else:
+            break
+
+### 方法二，使用对 ImageNetLabels 扩展的分类 ID
+
+首先获取 ImageNetLabels 的类列表
+
+    # Method 2: use image net class
+    # Before do this, please add new classes at the end of ImageNetLabels.txt. each class per line
+    # classes: daisy、dandelion、roses、sunflowers、tulips
+    labels_path = "ImageNetLabels.txt"
+    imagenet_labels = np.array(open(labels_path).read().splitlines())[1:].tolist()  # drop first line 'background'
+    # print(len(imagenet_labels), imagenet_labels)
+
+下面的代码里是用了 classes=imagenet_labels, class_mode='sparse', 这样的参数，用来将label设定为在 ImageNetLabels 基础上的扩展。
+
+    train_datagen = ImageDataGenerator(preprocessing_function=mobilenet_v2.preprocess_input,
+                                       validation_split=0.2)
+    train_generator = train_datagen.flow_from_directory(images_dir, target_size=(224, 224),
+                                                        color_mode='rgb', batch_size=32, shuffle=True,
+                                                        classes=imagenet_labels, class_mode='sparse',
+                                                        subset='training')
+    validation_generator = train_datagen.flow_from_directory(images_dir, target_size=(224, 224),
+                                                             color_mode='rgb', batch_size=32, shuffle=True,
+                                                             classes=imagenet_labels, class_mode='sparse',
+                                                             subset='validation')
+
+因为此处使用的 class_mode='sparse', 所以，模型 compile 时候，需要使用 loos = 'sparse_categorical_crossentropy' 算法。
+    
+    # because its class_mode='sparse'                                                         
+    loss_alg = 'sparse_categorical_crossentropy'
     
 ## 从 keras application 构建迁移学习的模型
 
 [hello_transfer_learning.py](../../src/study_keras/hello_transfer_learning.py) 展示了如何在已经训练好的模型上进行迁移学习并验证的过程
 
-获取已经训练好的模型
+获取已经训练好的基础模型。include_top=False 去掉了最后的 Dense 分类层，因为我们训练出新的5各类别，所以不需要这一层。
     
-        # define the model
-        base_model = mobilenet_v2.MobileNetV2(weights='imagenet', include_top=False)
-        base_model.trainable = False
-        base_model.summary()
+    ###################
+    # Define transfer learning model
+    ###################
+
+    # define the model
+    base_model = mobilenet_v2.MobileNetV2(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+    base_model.trainable = False
+    base_model.summary()
     
-操作方法一，直接在 keras.Sequential 操作。
+### 方法一，直接使用 keras.Sequential
+
+在 base_model 的基础上，增加新的分类结构。
     
-        # Method 1
-        model = keras.Sequential([
-            base_model,
-            keras.layers.GlobalAveragePooling2D(),
-            keras.layers.Dense(1024, activation='relu'),
-            keras.layers.Dense(512, activation='relu'),
-            keras.layers.Dropout(0.2),
-            keras.layers.Dense(5, activation='softmax')
-        ])
-        model.summary()
+    ###################
+    # Method 1
 
-操作方法二，使用在 keras.Model 扩展模型。
-    
-        # Method 2
-        x = base_model.output
-        x = keras.layers.GlobalAveragePooling2D()(x)
-        x = keras.layers.Dense(1024, activation='relu')(x)
-        x = keras.layers.Dense(512, activation='relu')(x)
-        x = keras.layers.Dropout(0.2)(x)
-        preds = keras.layers.Dense(5, activation='softmax')(x)  # final layer with softmax activation
-        model = keras.Model(inputs=base_model.input, outputs=preds)
-        model.summary()
+    model_name = "mobilenetv2_transfer_seq"
 
-这两种方法会有细微的区别，可以从下面对不同层级进行 layer.trainable = True 的设定结果，可以看出：
+    model = keras.Sequential([
+        base_model,
+        keras.layers.GlobalAveragePooling2D(),
+        keras.layers.Dense(1024, activation='relu'),
+        keras.layers.Dense(512, activation='relu'),
+        keras.layers.Dropout(0.2),
+        keras.layers.Dense(5, activation='softmax')
+    ])
+   
+在这个模型里，最后增加的 5 层都是需要重新训练的。而因为设置了 base_model.trainable = False ，所以 base_model 的权重不会重复训练。
 
-* 如果使用 Sequential，base_model 会作为一个整体被设置为可以训练。
-* 如果使用 Model，则可以训练属性能够设置到具体的没个细节层里。 
+如果需要对 base_model 进行更细节的 trainable 设置，可以参考下面的代码，不同层级进行 layer.trainable = True 的设定。
+例如：如果需要对 MobileNet v2 的最后 4 层进行微调，可以使用类似下面的代码：
 
+    # adjust base model,
+    trainable_base_layers = -3
+    for layer in base_model.layers[trainable_base_layers:]:
+        layer.trainable = True
+
+    layers_names = [layer.name for layer in base_model.layers if layer.trainable is True]
+    print("base_model trainable layers:", layers_names)
+
+    layers_names = [layer.name for layer in model.layers if layer.trainable is True]
+    print("model trainable layers:", layers_names)
         
-        layers_names = [layer.name for layer in model.layers]
-        print("All layers:", layers_names)
-        
-        layers_names = [layer.name for layer in model.layers if layer.trainable is True]
-        print("Trainable layers 1:", layers_names)
-        
-        trainable_top_layers = -8
-        # for layer in model.layers[:trainable_top_layers]:
-        #     layer.trainable = False
-        for layer in model.layers[trainable_top_layers:]:
-            layer.trainable = True
-       
-        layers_names = [layer.name for layer in model.layers if layer.trainable is True]
-        print("Trainable layers 2:", layers_names)
-    
-## 使用 ImageDataGenerator 创建训练和检验
+修改模型 trainable 之后，在进行训练之前，请务必对模型进行 compile，以使设定生效。请注意，此处的 loss 选择和数据集有关。
 
-创建训练数据。传递的 validation_split=0.2 参数用于创建训练集和验证集。
-    
-        train_datagen = ImageDataGenerator(preprocessing_function=mobilenet_v2.preprocess_input,
-                                           validation_split=0.2)
-                                           
-使用 subset='training' 获得训练集。
-                                           
-        train_generator = train_datagen.flow_from_directory(images_dir, target_size=(224, 224),
-                                                            color_mode='rgb', batch_size=32, shuffle=True,
-                                                            class_mode='categorical', subset='training')
-                                                            
-使用 subset='validation' 获得验证集。
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-        validation_generator = train_datagen.flow_from_directory(images_dir, target_size=(224, 224),
-                                                                 color_mode='rgb', batch_size=32, shuffle=True,
-                                                                 class_mode='categorical', subset='validation')
+### 方法二，使用在 keras.Model 扩展模型。
+
+下面的例子展示了对模型更精细的控制。截取原模型中的一段，组合成新的模型，并进行训练。
+可以看到，截取了 MobileNet V2 中层 block_16_project_BN 的输出，然后组合到新的模型中，
+利用 model = keras.Model(inputs=base_model.input, outputs=preds) 构造出模型。这个技巧，在 SSD-MobileNet 等算法实现时，可以用得着。
     
-        step_size_train = train_generator.n // train_generator.batch_size
-        step_size_validation = validation_generator.n // validation_generator.batch_size
+    ##################
+    # Method 2
+
+    model_name = "mobilenetv2_transfer_model"
+
+    x = base_model.get_layer('block_16_project_BN').output
+    x = keras.layers.Conv2D(1280, kernel_size=(1, 1))(x)
+    x = keras.layers.BatchNormalization()(x)
+    x = keras.layers.ReLU()(x)
+    x = keras.layers.Flatten()(x)
+    preds = keras.layers.Dense(5, activation='softmax')(x)  # final layer with softmax activation
+    model = keras.Model(inputs=base_model.input, outputs=preds)
+        
+这样构建出的新模型是一个网络。下面列出了这个网络的各层。
+        
+    layers_names = [layer.name for layer in model.layers]
+    print("All layers:", layers_names)
+
+    layers_names = [layer.name for layer in model.layers if layer.trainable is True]
+    print("Trainable layers:", layers_names)
+    
+## 训练
+
+训练之前，必须使用 model.compile 来使上面代码设置的 trainable 生效。
+
+    model.compile(optimizer='adam', loss=loss_alg, metrics=['accuracy']) 
 
 此时的模型需要使用 fit_generator、evaluate_generator、predict_generator 来使用这些 DataGenerator 产生的数据。
     
-        history = model.fit_generator(train_generator, steps_per_epoch=step_size_train,
-                                      validation_data=validation_generator, validation_steps=step_size_validation,
-                                      epochs=5, callbacks=[tp_callback])
-        print("Train history : ", history.history)
+    history = model.fit_generator(train_generator, steps_per_epoch=step_size_train,
+                                  validation_data=validation_generator, validation_steps=step_size_validation,
+                                  epochs=5, callbacks=[tp_callback])
+    print("Train history : ", history.history)
+
+    val_results = model.evaluate_generator(validation_generator, steps=step_size_validation)
+    print("Evaluate result : ", val_results)
+
+    results = model.predict_generator(validation_generator, steps=step_size_validation)
+    result_class = [np.argmax(result) for result in results]
+    print("predict result : ", result_class)
     
-        val_results = model.evaluate_generator(validation_generator, steps=step_size_validation)
-        print("Evaluate result : ", val_results)
-    
-        results = model.predict_generator(validation_generator, steps=step_size_validation)
-        result_class = [np.argmax(result) for result in results]
-        print("predict result : ", result_class)
+## 使用 estimator 进行训练
+
+
+
+[hello_transfer_learning_2.py](../../src/study_keras/hello_transfer_learning_2.py) 展示了迁移学习的基本过程。
