@@ -216,7 +216,7 @@ Estimator 会封装下列操作：训练、评估、预测、导出以供使用�
 Estimator 具有下列优势：可以在本地主机上或分布式多服务器环境中运行基于 Estimator 的模型，而无需更改模型。
 此外，可以在 CPU、GPU 或 TPU 上运行基于 Estimator 的模型，而无需重新编码模型。
 
-**这个例子可以使用到GPU运算！！！**
+**这个例子可以使用到GPU运算！！！但是似乎会挂住**
 
 [hello_transfer_learning_2.py](../../src/study_keras/hello_transfer_learning_2.py) 展示了迁移学习模型在 Estimator 上运行的基本过程。
 
