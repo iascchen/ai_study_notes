@@ -21,4 +21,4 @@ Ubuntu 18.04, Tensorflow 1.14.0
 
 * [使用 tf.keras.applications 实现图像分类和可视化观察](notes/study_keras/2_hello_keras_applications.md)
 * [使用 tf.keras.applications 实现图像分类的迁移学习](notes/study_keras/3_hello_transfer_learning.md)
-* [对象检测及其迁移学习](notes/study_keras/4_hello_obj_detect.md)
+* [使用 tfhub 进行对象检测](notes/study_keras/4_hello_tfhub.md)

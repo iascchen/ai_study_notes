@@ -89,10 +89,8 @@ output_path = "../../output"
 models_path = "../../models"
 images_dir = "%s/pets/images" % base_path
 
-# module_handle = "https://tfhub.dev/google/openimages_v4/ssd/mobilenet_v2/1"
 # module_handle = "https://tfhub.dev/google/faster_rcnn/openimages_v4/inception_resnet_v2/1"
-
-module_handle = "%s/ssd-mobilenet_v2" % models_path
+module_handle = "https://tfhub.dev/google/openimages_v4/ssd/mobilenet_v2/1"
 
 with tf.Graph().as_default():
     detector = hub.Module(module_handle)
