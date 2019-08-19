@@ -10,8 +10,15 @@ from PIL import ImageColor
 from PIL import ImageDraw
 from PIL import ImageFont
 
+base_path = "../../data"
+output_path = "../../output"
+models_path = "../../models"
+images_dir = "%s/pets/images" % base_path
+
 # Check available GPU devices.
+os.environ['TFHUB_CACHE_DIR'] = models_path
 print("TFHUB_CACHE_DIR", os.environ.get('TFHUB_CACHE_DIR'))
+
 print("The following GPU devices are available: %s" % tf.test.gpu_device_name())
 
 

@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow_hub as hub
 from tensorflow.keras.applications import mobilenet_v2
 from tensorflow.keras.preprocessing import image
+
 # # Check available GPU devices.
 # print("The following GPU devices are available: %s" % tf.test.gpu_device_name())
 #
@@ -125,13 +126,13 @@ from tensorflow.keras.preprocessing import image
 #             result_out["detection_class_entities"], result_out["detection_scores"])
 #
 #         display_image(image_with_boxes)
-from tensorflow.python.saved_model import tag_constants
 
 base_path = "../../data"
 output_path = "../../output"
 models_path = "../../models"
 images_dir = "%s/pets/images" % base_path
 
+os.environ['TFHUB_CACHE_DIR'] = models_path
 print("TFHUB_CACHE_DIR", os.environ.get('TFHUB_CACHE_DIR'))
 
 # module_handle = "https://tfhub.dev/google/openimages_v4/ssd/mobilenet_v2/1"
