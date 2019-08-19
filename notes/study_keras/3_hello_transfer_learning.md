@@ -152,19 +152,23 @@
 
 下面的例子展示了对模型更精细的控制。截取原模型中的一段，组合成新的模型，并进行训练。
 可以看到，截取了 MobileNet V2 中层 block_16_project_BN 的输出，然后组合到新的模型中，
-利用 model = keras.Model(inputs=base_model.input, outputs=preds) 构造出模型。这个技巧，在 SSD-MobileNet 等算法实现时，可以用得着。
+利用 model = keras.Model(inputs=base_model.input, outputs=preds) 构造出模型。后面添加的几个网络，完全参考了 Mobilenet V2 的实现。
+这个技巧，在 SSD-MobileNet 等算法实现时，可以用得着。
     
     ##################
     # Method 2
 
     model_name = "mobilenetv2_transfer_model"
 
+    channel_axis = 1 if K.image_data_format() == 'channels_first' else -1
+
     x = base_model.get_layer('block_16_project_BN').output
-    x = keras.layers.Conv2D(1280, kernel_size=(1, 1))(x)
-    x = keras.layers.BatchNormalization()(x)
-    x = keras.layers.ReLU()(x)
-    x = keras.layers.Flatten()(x)
-    preds = keras.layers.Dense(5, activation='softmax')(x)  # final layer with softmax activation
+    x = keras.layers.Conv2D(1280, kernel_size=1, use_bias=False, name='Conv_1')(x)
+    x = keras.layers.BatchNormalization(axis=channel_axis, epsilon=1e-3, momentum=0.999, name='Conv_1_bn')(x)
+    x = keras.layers.ReLU(6., name='out_relu')(x)
+    
+    x = keras.layers.GlobalAveragePooling2D()(x)
+    preds = keras.layers.Dense(5, activation='softmax', use_bias=True, name='Logits')(x)
     model = keras.Model(inputs=base_model.input, outputs=preds)
         
 这样构建出的新模型是一个网络。下面列出了这个网络的各层。
@@ -175,14 +179,14 @@
 此时，还可以通过设置各层的 trainable = True 来调整原来 MobileNet V2 中的层次。
     
     # adjust model for more trainable layer
-    trainable_layers = -11
+    trainable_layers = -13
     for layer in model.layers[trainable_layers:]:
         layer.trainable = True
 
     layers_names = [layer.name for layer in model.layers if layer.trainable is True]
     print("Trainable layers:", layers_names)
 
-得到的可训练层如下，Trainable params 为 1,045,445：
+得到的可训练层如下，Trainable params 为 892,485：
 
     Trainable layers: ['block_16_expand_relu', 'block_16_depthwise', 'block_16_depthwise_BN', 
      'block_16_depthwise_relu', 'block_16_project', 'block_16_project_BN', 

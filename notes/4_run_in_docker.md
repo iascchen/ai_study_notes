@@ -9,7 +9,9 @@
 
 启动 Docker 容器
 
-    $ docker run --name=my_tf_1.14 --volume=/data/my_tf_1.14:/data -w=/data --gpus all -it tensorflow/tensorflow:1.14.0-gpu-py3-jupyter bash
+本来想在 tf 1.14.0 版本上测试验证，但是发现无法初始化 cuDNN。回退到 1.13.2 版本上的 Docker，实测 GPU 在 Docker 内可用，但是感觉还是慢。 
+
+    $ docker run --name=my_tf_1.13 --volume=/data/my_tf_1.13:/data -w=/data --gpus all -it tensorflow/tensorflow:1.13.2-gpu-py3-jupyter bash
     ________                               _______________
     ___  __/__________________________________  ____/__  /________      __
     __  /  _  _ \_  __ \_  ___/  __ \_  ___/_  /_   __  /_  __ \_ | /| / /
@@ -28,13 +30,13 @@
 
 如果需要重新调整 Docker 参数，可以删掉已有的 Container
 
-    $ docker stop my_tf_1.14
-    $ docker rm my_tf_1.14
+    $ docker stop my_tf_1.13
+    $ docker rm my_tf_1.13
 
 如果重新启动容器，您可以使用docker exec重用容器。
 
-    $ docker start my_tf_1.14
-    $ docker exec -it my_tf_1.14 bash
+    $ docker start my_tf_1.13
+    $ docker exec -it my_tf_1.13 bash
     root@2f2cda53bd14:/data#
 
 环境准备GPU检查
@@ -61,6 +63,13 @@
 
     $ apt-get update
     $ apt-get install -y vim git wget
+
+设置环境变量
+
+修改 .bash_profile, 设置两个 cache 目录，这样不必每次创建 Docker 都重新下载 对应的文件。
+
+    export KERAS_HOME="/data/cache/keras"
+    export TFHUB_CACHE_DIR='/data/cache/tfhub'
 
 ## 使用本例
 

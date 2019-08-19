@@ -12,8 +12,8 @@ if __name__ == '__main__':
     #######################
     # load model
     #######################
-    h5_path = "%s/mobilenetv2_transfer_seq.h5" % output_path
-    # h5_path = "%s/mobilenetv2_transfer_model.h5" % output_path
+    # h5_path = "%s/mobilenetv2_transfer_seq.h5" % output_path
+    h5_path = "%s/mobilenetv2_transfer_model.h5" % output_path
 
     loaded_model = keras.models.load_model(h5_path)
 

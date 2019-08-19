@@ -1,3 +1,4 @@
+import os
 import time
 
 import numpy as np
@@ -13,6 +14,8 @@ from tensorflow.python.keras.applications import imagenet_utils
 base_path = "../../data"
 output_path = "../../output"
 images_dir = "%s/pets/images" % base_path
+
+print("KERAS_HOME", os.environ.get('KERAS_HOME'))
 
 
 # process an image to be model friendly

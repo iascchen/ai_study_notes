@@ -1,9 +1,13 @@
+import os
+
 from tensorflow.keras.applications import mobilenet_v2
 from tensorflow.python.keras.utils import plot_model
 
 base_path = "../../data"
 output_path = "../../output"
 images_dir = "%s/pets/images" % base_path
+
+print("KERAS_HOME", os.environ.get('KERAS_HOME'))
 
 # define the model
 model_100 = mobilenet_v2.MobileNetV2(input_shape=None, alpha=1.0, include_top=True,

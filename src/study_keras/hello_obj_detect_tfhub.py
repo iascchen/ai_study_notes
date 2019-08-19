@@ -1,3 +1,4 @@
+import os
 import time
 
 import matplotlib.pyplot as plt
@@ -10,6 +11,7 @@ from PIL import ImageDraw
 from PIL import ImageFont
 
 # Check available GPU devices.
+print("TFHUB_CACHE_DIR", os.environ.get('TFHUB_CACHE_DIR'))
 print("The following GPU devices are available: %s" % tf.test.gpu_device_name())
 
 
