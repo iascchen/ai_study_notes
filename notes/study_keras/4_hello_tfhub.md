@@ -9,6 +9,7 @@ TFHub 的 模型加载可以使用 URL，直接从云端下载。也可以使用
 [hello_tfhub.py](../../src/study_keras/hello_tfhub.py) 通过设定 TFHUB_CACHE_DIR 环境变量，指定了模型的下载存储路径，将云端下载的内容存在你需要的位置。
 下载的模型会被存放在对应 Hash 值的目录下，同时会产生一个hash值为名称的文本描述文件。
 这个模型目录下，会有 tfhub_module.pb 和 saved_module.pb 这样的模型文件，还会有对应的参数存储。
+get_input_info_dict 和 get_output_info_dict 能够显示此模型的输入输出信息。
 
     import hashlib
     import os
@@ -24,6 +25,10 @@ TFHub 的 模型加载可以使用 URL，直接从云端下载。也可以使用
     handle_hash = hashlib.sha1(module_handle.encode("utf8")).hexdigest()
     module_handle = "%s/%s" % (models_path, handle_hash)
     obj_detector_1 = hub.Module(module_handle)
+    
+    print(obj_detector_1.get_input_info_dict())
+    print(obj_detector_1.get_output_info_dict())
+    
     print("obj_detector done")
 
 ## 常见 TFHub 模型的下载

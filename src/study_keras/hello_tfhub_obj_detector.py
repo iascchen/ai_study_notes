@@ -84,11 +84,6 @@ def draw_boxes(image, boxes, class_names, scores, max_boxes=10, min_score=0.1):
     return image
 
 
-base_path = "../../data"
-output_path = "../../output"
-models_path = "../../models"
-images_dir = "%s/pets/images" % base_path
-
 # module_handle = "https://tfhub.dev/google/faster_rcnn/openimages_v4/inception_resnet_v2/1"
 module_handle = "https://tfhub.dev/google/openimages_v4/ssd/mobilenet_v2/1"
 

@@ -14,6 +14,8 @@ handle_hash = hashlib.sha1(module_handle.encode("utf8")).hexdigest()  # f34b2684
 # module_handle = "%s/%s" % (models_path, handle_hash)
 
 obj_detector_1 = hub.Module(module_handle)
+print(obj_detector_1.get_input_info_dict())
+print(obj_detector_1.get_output_info_dict())
 print("obj_detector done")
 
 #####################

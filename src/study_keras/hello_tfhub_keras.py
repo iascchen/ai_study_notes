@@ -19,7 +19,7 @@ IMAGE_SHAPE = (224, 224)
 # # Hub in Keras
 # #####################
 
-# TODO will return failure, maybe it is only for tensorflow 2.0
+# TODO TF 1.14 return failure, it is only for tensorflow 2.0
 classifier_layers = hub.KerasLayer(classifier_url, input_shape=IMAGE_SHAPE + (3,))
 
 classifier = keras.Sequential([
