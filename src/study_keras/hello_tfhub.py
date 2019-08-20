@@ -35,10 +35,3 @@ print("feature_extractor_hash", feature_extractor_hash)
 # feature_extractor_hash 9a40df43ae974de74f59ca892971f265fec3d319
 feature_extractor = hub.Module(feature_extractor_url)
 print("feature_extractor done")
-
-obj_detector2_url = "https://tfhub.dev/google/faster_rcnn/openimages_v4/inception_resnet_v2/1"
-obj_detector2_hash = hashlib.sha1(obj_detector2_url.encode("utf8")).hexdigest()
-print("obj_detector2_hash", obj_detector2_hash)
-# obj_detector2_hash 6e850c920451d5243d1fb87a3242c087535b9183
-obj_detector2 = hub.Module(obj_detector2_url)
-print("obj_detector2 done")
