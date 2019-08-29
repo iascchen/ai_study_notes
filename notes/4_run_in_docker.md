@@ -71,6 +71,18 @@
     export KERAS_HOME="/data/cache/keras"
     export TFHUB_CACHE_DIR='/data/cache/tfhub'
 
+## 检查 CUDA 和 cuDNN 的安装
+
+    $ cat /usr/local/cuda/version.txt
+    CUDA Version 10.0.130
+    
+    $ dpkg -l | egrep 'cuda|cudnn|TensorRT|libcupti|libnvinfer'
+    
+    $ apt-get install --no-install-recommends \
+        cuda-10-0 \
+        libcudnn7=7.6.2.24-1+cuda10.0 \
+        libcudnn7-dev=7.6.2.24-1+cuda10.0
+    
 ## 使用本例
 
 进入对应的 Python 虚拟环境
@@ -90,9 +102,13 @@ Clone 此项目
     ai_study_notes/src$ pip install Cython
     ai_study_notes/src$ pip install -r requirements.txt
     
-不清楚为什么，安装 tensorflowjs 会重新安装 tensorflow 包，导致 GPU 支持不可用。解决办法是强制重新安装 Tensorflow-gpu。
+不清楚为什么，安装 tensorflowjs 会重新安装 tensorflow 包，导致 GPU 支持不可用。强制重新安装 Tensorflow-gpu。
 
-    pip install --force-reinstall tensorflow-gpu==1.14.0
+    $ pip install --force-reinstall \
+        h5py==2.8.0 \
+        numpy==1.16.4 \
+        six==1.11.0 \
+        tensorflow-gpu==1.14.0 
     
 验证代码
 
@@ -100,10 +116,3 @@ Clone 此项目
     GPU is ready : True    
     
 但是，执行 hello_keras_mobilenet_v1.py 还是会报错，说 cuDNN 不能创建。
-
-在 Docker 内重新安装 cuda 和 cuDNN，试一下（暂时不起作用，还要再看看）
-
-    $ apt-get install --no-install-recommends \
-        cuda-10-0 \
-        libcudnn7=7.6.0.64-1+cuda10.0  \
-        libcudnn7-dev=7.6.0.64-1+cuda10.0
