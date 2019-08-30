@@ -23,7 +23,7 @@ Ubuntu 18.04, Tensorflow 1.14.0
 * [使用 tf.keras.applications 实现图像分类的迁移学习](notes/study_keras/3_hello_transfer_learning.md)
 * [使用 tfhub 进行对象检测](notes/study_keras/4_hello_tfhub.md)
 * [使用 Tensorflow Object Detection API 识别星战千年隼（ai_pet_detector项目）](https://github.com/iascchen/ai_pet_detector)
-* 神经网络风格迁移
+* [神经网络风格迁移](notes/study_keras/5_hello_style_transfer.md)
 
 ### 文本和序列
 

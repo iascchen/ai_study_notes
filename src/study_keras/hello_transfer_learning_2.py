@@ -62,7 +62,11 @@ if __name__ == '__main__':
     # Use tensorflow estimator
     ###################
 
-    est_model = keras.estimator.model_to_estimator(keras_model=keras_model)
+    # Multi GPUs
+    strategy = tf.contrib.distribute.MirroredStrategy()
+    config = tf.estimator.RunConfig(train_distribute=strategy)
+
+    est_model = keras.estimator.model_to_estimator(keras_model=keras_model, config=config)
 
     train_x = []
     train_y = []
