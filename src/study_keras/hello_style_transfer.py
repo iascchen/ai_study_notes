@@ -286,6 +286,5 @@ if __name__ == '__main__':
 
     best, best_loss = run_style_transfer(content_path, style_path, gen_img_prefix, num_iterations=1000)
 
-    plot_img = Image.fromarray(best)
     fname = '%s_final.png' % gen_img_prefix
-    imsave(fname, plot_img)
+    imsave(fname, best)

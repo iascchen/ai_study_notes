@@ -1,5 +1,8 @@
 # Hello Style Transfer
 
+[Reference Link](https://github.com/tensorflow/models/blob/master/research/nst_blogpost/4_Neural_Style_Transfer_with_Eager_Execution.ipynb
+#)
+
 ## 风格迁移的原理
 
     loss = distance(style(reference_image) - style(generated_image)) \
@@ -11,25 +14,25 @@
 * style 计算图片的风格表示
 * content 计算图片的内容表示。 
 
-### Style Loss
-
-Computing style loss is a bit more involved, but follows the same principle, this time feeding our network the base input image and the style image. However, instead of comparing the raw intermediate outputs of the base input image and the style image, we instead compare the Gram matrices of the two outputs.
-
-Mathematically, we describe the style loss of the base input image, $x$, and the style image, $a$, as the distance between the style representation (the gram matrices) of these images. We describe the style representation of an image as the correlation between different filter responses given by the Gram matrix  $G^l$, where $G^l_{ij}$ is the inner product between the vectorized feature map $i$ and $j$ in layer $l$. We can see that $G^l_{ij}$ generated over the feature map for a given image represents the correlation between feature maps $i$ and $j$.
-
-To generate a style for our base input image, we perform gradient descent from the content image to transform it into an image that matches the style representation of the original image. We do so by minimizing the mean squared distance between the feature correlation map of the style image and the input image. The contribution of each layer to the total style loss is described by $$E_l = \frac{1}{4N_l^2M_l^2} \sum_{i,j}(G^l_{ij} - A^l_{ij})^2$$
-
-where $G^l_{ij}$ and $A^l_{ij}$ are the respective style representation in layer $l$ of $x$ and $a$. $N_l$ describes the number of feature maps, each of size $M_l = height * width$. Thus, the total style loss across each layer is $$L_{style}(a, x) = \sum_{l \in L} w_l E_l$$ where we weight the contribution of each layer's loss by some factor $w_l$. In our case, we weight each layer equally ($w_l =\frac{1}{|L|}$)
-
 ### Content Loss
 
-Our content loss definition is actually quite simple. We’ll pass the network both the desired content image and our base input image. This will return the intermediate layer outputs (from the layers defined above) from our model. Then we simply take the euclidean distance between the two intermediate representations of those images.
+网络更靠底部的激活层包含关于图像的局部信息，而更靠近顶部的层则包含更加全局、抽象的信息。因此选择更靠近顶部的层作为内容的表示。
 
-More formally, content loss is a function that describes the distance of content from our output image $x$ and our content image, $p$. Let $C_{nn}$ be a pre-trained deep convolutional neural network. Again, in this case we use VGG19. Let $X$ be any image, then $C_{nn}(X)$ is the network fed by X. Let $F^l_{ij}(x) \in C_{nn}(x)$ and $P^l_{ij}(p) \in C_{nn}(p)$ describe the respective intermediate feature representation of the network with inputs $x$ and $p$ at layer $l$. Then we describe the content distance (loss) formally as: $$L^l_{content}(p, x) = \sum_{i, j} (F^l_{ij}(x) - P^l_{ij}(p))^2$$
+    # Content layer where will pull our feature maps
+    content_layers = ['block5_conv2']
 
-We perform backpropagation in the usual way such that we minimize this content loss. We thus change the initial image until it generates a similar response in a certain layer (defined in content_layer) as the original content image.
+Content loss 只是简单地取两个图像的内容表示之间的欧氏距离 $$L^l_{content}(p, x) = \sum_{i, j} (F^l_{ij}(x) - P^l_{ij}(p))^2$$ 。
 
-This can be implemented quite simply. Again it will take as input the feature maps at a layer L in a network fed by x, our input image, and p, our content image, and return the content distance.
+### Style Loss
+
+    # Style layer we are interested in
+    style_layers = ['block1_conv1', 'block2_conv1', 'block3_conv1', 'block4_conv1', 'block5_conv1']
+
+计算风格损失涉及更多的层。但是，我们不是比较基本输入图像和样式图像的原始中间输出，而是比较两个输出的Gram矩阵。
+将图像的样式表示描述为由Gram矩阵。$G^l$ 给出的不同滤波器响应之间的相关性，其中 $G^l_{ij}$ 是矢量化特征映射 $i$ 和 $j$ 之间的内积。
+我们可以看到，在给定图像的特征映射上生成的 $G^l_{ij}$ 表示特征映射 $i$ 和 $j$ 之间的相关性。
+为了生成基本输入图像的样式，我们从内容图像执行梯度下降，将其转换为与原始图像的样式表示相匹配的图像。
+我们通过最小化样式图像的特征相关性图和输入图像之间的均方距离来实现。每个层对总风格损失的贡献由 $$ E_l = \frac{1}{4N_l^2M_l^2} \sum_{i,j}(G^l_{ij} - A^l_{ij})^2 $$ 描述。
 
 ### Loss
 
@@ -38,4 +41,3 @@ This can be implemented quite simply. Again it will take as input the feature ma
 
     # Get total loss
     loss = style_score + content_score 
-    
