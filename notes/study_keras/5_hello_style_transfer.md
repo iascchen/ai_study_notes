@@ -5,6 +5,8 @@
 
 ## 风格迁移的原理
 
+[参考代码](../src/study_keras/hello_style_transfer.py)
+
     loss = distance(style(reference_image) - style(generated_image)) \
        + distance(content(original_image) - content(generated_image))
 
@@ -41,3 +43,8 @@ Content loss 只是简单地取两个图像的内容表示之间的欧氏距离 
 
     # Get total loss
     loss = style_score + content_score 
+    
+## 快速风格迁移实现
+
+[快速风格迁移](https://github.com/lengstrom/fast-style-transfer)
+

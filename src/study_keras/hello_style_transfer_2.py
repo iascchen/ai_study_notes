@@ -277,12 +277,11 @@ def run_style_transfer(content_path, style_path, gen_img_prefix,
 
 
 if __name__ == '__main__':
-    image_path = "../../images"
-    style_path = "../../images/styles"
+    base_path = "../../images"
     output_path = "../../output"
 
-    content_path = '%s/Green_Sea_Turtle_grazing_seagrass.jpg' % image_path
-    style_path = '%s/The_Great_Wave_off_Kanagawa.jpg' % style_path
+    content_path = '%s/Green_Sea_Turtle_grazing_seagrass.jpg' % base_path
+    style_path = '%s/The_Great_Wave_off_Kanagawa.jpg' % base_path
     gen_img_prefix = '%s/GreatWave_Turtle' % output_path
 
     best, best_loss = run_style_transfer(content_path, style_path, gen_img_prefix, num_iterations=1000)
