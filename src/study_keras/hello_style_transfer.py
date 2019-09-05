@@ -14,14 +14,10 @@ import time
 import numpy as np
 import tensorflow as tf
 from PIL import Image
-from keras.preprocessing.image import load_img
-from matplotlib.image import imsave
+from imageio import imsave
 from tensorflow.keras.applications import vgg16
 from tensorflow.python.keras import models
 from tensorflow.python.keras.preprocessing import image as kp_image
-
-tf.enable_eager_execution()
-print("Eager execution: {}".format(tf.executing_eagerly()))
 
 
 def load_img(path_to_img):
@@ -277,13 +273,16 @@ def run_style_transfer(content_path, style_path, gen_img_prefix,
 
 
 if __name__ == '__main__':
+    tf.enable_eager_execution()
+    print("Eager execution: {}".format(tf.executing_eagerly()))
+
     image_path = "../../images"
     style_path = "../../images/styles"
     output_path = "../../output"
 
     content_path = '%s/chinese.jpg' % image_path
-    style_path = '%s/mosaic.jpg' % style_path
-    gen_img_prefix = '%s/mosaic_chinese' % output_path
+    style_path = '%s/paint.jpg' % style_path
+    gen_img_prefix = '%s/paint_chinese' % output_path
 
     best, best_loss = run_style_transfer(content_path, style_path, gen_img_prefix, num_iterations=500)
 
