@@ -3,6 +3,10 @@
 [Reference Link](https://github.com/tensorflow/models/blob/master/research/nst_blogpost/4_Neural_Style_Transfer_with_Eager_Execution.ipynb
 #)
 
+[谈谈图像的Style Transfer（一）](https://blog.csdn.net/Hungryof/article/details/53981959)
+
+[谈谈图像的style transfer（二）](https://blog.csdn.net/Hungryof/article/details/71512406)
+
 ## 风格迁移的原理
 
 [参考代码](../src/study_keras/hello_style_transfer.py)
@@ -46,5 +50,12 @@ Content loss 只是简单地取两个图像的内容表示之间的欧氏距离 
     
 ## 快速风格迁移实现
 
-[快速风格迁移](https://github.com/lengstrom/fast-style-transfer)
+[快速风格迁移](https://github.com/overflocat/fast-neural-style-keras)
 
+2016年3月，斯坦福大学的研究者发表了一篇文章，提出了一种近实时的风格迁移方法。他们能够训练一个神经网络来对任意指定的内容图像做单一的风格迁移，同时，也可以训练一个网络来搞定不同的风格。 
+Johnson的这篇paper Perceptual Losses for Real-Time Style Transfer and Super-Resolution表明，对指定图片应用单一的风格迁移，只需一次前向计算是可能的。 
+
+Gatys的方法，将迁移问题简化为对loss函数的寻优问题，Johnson则更进一步，如果将风格约束为单一的，那么可以训练一个神经网络来解决实时优化问题，将任意指定图片做固定风格的迁移。
+该模型包括一个图转换网络和一个loss计算网络。图转换网络是个多层CNN网络，能够将输入内容图片C装换为输出图片Y，图片Y具有C的内容和S的风格特点。loss计算网络用来计算生成图Y与内容图C和风格图S的loss。VGG网络已经用目标检测任务预训练过。 
+基于上述模型，我们可以训练图转换网络以降低total-loss。挑选一固定风格的图像，用大量的不同内容的图像作为训练样本。
+Johnson使用Microsoft COCO dataset来训练，使用误差后传方式作为优化方法。他所用的图转换结构包含3个Conv+ReLU模块，5个残差模块，3个转置卷积，1个tanh层生成输出。

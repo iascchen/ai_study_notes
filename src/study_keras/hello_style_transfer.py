@@ -281,11 +281,11 @@ if __name__ == '__main__':
     style_path = "../../images/styles"
     output_path = "../../output"
 
-    content_path = '%s/Green_Sea_Turtle_grazing_seagrass.jpg' % image_path
-    style_path = '%s/The_Great_Wave_off_Kanagawa.jpg' % style_path
-    gen_img_prefix = '%s/GreatWave_Turtle' % output_path
+    content_path = '%s/chinese.jpg' % image_path
+    style_path = '%s/mosaic.jpg' % style_path
+    gen_img_prefix = '%s/mosaic_chinese' % output_path
 
-    best, best_loss = run_style_transfer(content_path, style_path, gen_img_prefix, num_iterations=1000)
+    best, best_loss = run_style_transfer(content_path, style_path, gen_img_prefix, num_iterations=500)
 
     fname = '%s_final.png' % gen_img_prefix
     imsave(fname, best)

@@ -118,6 +118,10 @@ Clone 此项目
 
     sudo apt-get remove cuda-cudart-10-1 cuda-cudart-dev-10-1 
     sudo apt-get install --no-install-recommends --allow-downgrades cuda-repo-ubuntu1804=10.0.130-1
+    
+Remove all packages marked as rc by dpkg
+
+    $ dpkg --list |grep "^rc" | cut -d " " -f 3 | xargs sudo dpkg --purge
 
 ## 检查所有安装包的版本
     
