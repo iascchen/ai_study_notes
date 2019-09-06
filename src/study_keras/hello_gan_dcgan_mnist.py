@@ -124,13 +124,8 @@ def generate_and_save_images(model, epoch, test_input):
         plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
         plt.axis('off')
 
-    plt.savefig('image_at_epoch_{:04d}.png'.format(epoch))
-    plt.show()
-
-
-# # Display a single image using the epoch number
-# def display_image(epoch_no):
-#     return PIL.Image.open('image_at_epoch_{:04d}.png'.format(epoch_no))
+    plt.savefig('dcgan_at_epoch_{:04d}.png'.format(epoch))
+    # plt.show()
 
 
 if __name__ == '__main__':
@@ -152,8 +147,8 @@ if __name__ == '__main__':
 
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
 
-    generator = make_generator_model()
-    discriminator = make_discriminator_model()
+    _generator = make_generator_model()
+    _discriminator = make_discriminator_model()
 
     generator_optimizer = tf.train.AdamOptimizer(1e-4)
     discriminator_optimizer = tf.train.AdamOptimizer(1e-4)
@@ -162,8 +157,8 @@ if __name__ == '__main__':
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                      discriminator_optimizer=discriminator_optimizer,
-                                     generator=generator,
-                                     discriminator=discriminator)
+                                     generator=_generator,
+                                     discriminator=_discriminator)
 
     EPOCHS = 50
     noise_dim = 100
@@ -175,10 +170,10 @@ if __name__ == '__main__':
                                                      noise_dim])
 
     # train_step = tf.contrib.eager.defun(train_step)
-    train(generator, discriminator, train_dataset, EPOCHS)
+    train(_generator, _discriminator, train_dataset, EPOCHS)
 
     with imageio.get_writer('dcgan.gif', mode='I') as writer:
-        filenames = glob.glob('image*.png')
+        filenames = glob.glob('dcgan*.png')
         filenames = sorted(filenames)
         last = -1
         for i, filename in enumerate(filenames):

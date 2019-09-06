@@ -111,7 +111,7 @@ get_input_info_dict 和 get_output_info_dict 能够显示此模型的输入输�
 
 [hello_tfhub_keras.py](../../src/study_keras/hello_tfhub_keras.py) 展示了直接使用 TFHub 和 Keras 之间的互动。
 
-**注意** 这部分内容似乎是 TF 2 的功能，在 TF 1.14 上没有实验成功。
+**注意** 这部分内容是 TF 2 的功能，在 TF 1.14 上没有实验成功。
 
     classifier_url = "https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/classification/3"
     
