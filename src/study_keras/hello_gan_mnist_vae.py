@@ -11,7 +11,7 @@ import tensorflow.keras.layers as layers
 
 tfe = tf.contrib.eager
 
-plt.rcParams['figure.max+open_warning'] = 60
+plt.rcParams['figure.max_open_warning'] = 60
 
 
 class CVAE(keras.Model):
