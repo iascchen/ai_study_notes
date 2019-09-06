@@ -9,6 +9,8 @@ import tensorflow.keras as keras
 import tensorflow.keras.layers as layers
 import tensorflow.losses as losses
 
+plt.rcParams['figure.max+open_warning'] = 60
+
 
 def make_generator_model():
     model = keras.Sequential()
