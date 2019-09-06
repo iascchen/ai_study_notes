@@ -73,7 +73,7 @@ def discriminator_loss(real_output, generated_output):
 
 def train_step(generator, discriminator, images):
     # generating noise from a normal distribution
-    noise = tf.random_normal([BATCH_SIZE, noise_dim])
+    noise = tf.random.normal([BATCH_SIZE, noise_dim])
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
         generated_images = generator(noise, training=True)
@@ -168,7 +168,7 @@ if __name__ == '__main__':
 
     # We'll re-use this random vector used to seed the generator so
     # it will be easier to see the improvement over time.
-    random_vector_for_generation = tf.random_normal([num_examples_to_generate,
+    random_vector_for_generation = tf.random.normal([num_examples_to_generate,
                                                      noise_dim])
 
     # train_step = tf.contrib.eager.defun(train_step)

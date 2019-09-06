@@ -43,7 +43,7 @@ class CVAE(keras.Model):
 
     def sample(self, eps=None):
         if eps is None:
-            eps = tf.random_normal(shape=(100, self.latent_dim))
+            eps = tf.random.normal(shape=(100, self.latent_dim))
         return self.decode(eps, apply_sigmoid=True)
 
     def encode(self, x):
@@ -51,7 +51,7 @@ class CVAE(keras.Model):
         return mean, logvar
 
     def reparameterize(self, mean, logvar):
-        eps = tf.random_normal(shape=mean.shape)
+        eps = tf.random.normal(shape=mean.shape)
         return eps * tf.exp(logvar * .5) + mean
 
     def decode(self, z, apply_sigmoid=False):
@@ -139,7 +139,7 @@ if __name__ == '__main__':
 
     # keeping the random vector constant for generation (prediction) so
     # it will be easier to see the improvement.
-    random_vector_for_generation = tf.random_normal(shape=[num_examples_to_generate, latent_dim])
+    random_vector_for_generation = tf.random.normal(shape=[num_examples_to_generate, latent_dim])
     model = CVAE(latent_dim)
 
     generate_and_save_images(model, 0, random_vector_for_generation)
