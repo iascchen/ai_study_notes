@@ -9,6 +9,8 @@ import tensorflow as tf
 import tensorflow.keras as keras
 import tensorflow.keras.layers as layers
 
+tfe = tf.contrib.eager
+
 
 class CVAE(keras.Model):
     def __init__(self, latent_dim):
@@ -60,10 +62,8 @@ class CVAE(keras.Model):
 
 
 def log_normal_pdf(sample, mean, logvar, raxis=1):
-    log2pi = tf.log(2. * np.pi)
-    return tf.reduce_sum(
-        -.5 * ((sample - mean) ** 2. * tf.exp(-logvar) + logvar + log2pi),
-        axis=raxis)
+    log2pi = tf.math.log(2. * np.pi)
+    return tf.reduce_sum(-.5 * ((sample - mean) ** 2. * tf.exp(-logvar) + logvar + log2pi), axis=raxis)
 
 
 def compute_loss(model, x):
@@ -78,18 +78,18 @@ def compute_loss(model, x):
     return -tf.reduce_mean(logpx_z + logpz - logqz_x)
 
 
-def compute_gradients(model, x):
+def compute_gradients(_model, x):
     with tf.GradientTape() as tape:
-        loss = compute_loss(model, x)
+        loss = compute_loss(_model, x)
     return tape.gradient(loss, model.trainable_variables), loss
 
 
-def apply_gradients(optimizer, gradients, variables, global_step=None):
-    optimizer.apply_gradients(zip(gradients, variables), global_step=global_step)
+def apply_gradients(_optimizer, _gradients, variables, global_step=None):
+    _optimizer.apply_gradients(zip(_gradients, variables), global_step=global_step)
 
 
-def generate_and_save_images(model, epoch, test_input):
-    predictions = model.sample(test_input)
+def generate_and_save_images(_model, _epoch, test_input):
+    predictions = _model.sample(test_input)
     fig = plt.figure(figsize=(4, 4))
 
     for i in range(predictions.shape[0]):
@@ -98,7 +98,7 @@ def generate_and_save_images(model, epoch, test_input):
         plt.axis('off')
 
     # tight_layout minimizes the overlap between 2 sub-plots
-    plt.savefig('vae_at_epoch_{:04d}.png'.format(epoch))
+    plt.savefig('vae_at_epoch_{:04d}.png'.format(_epoch))
     # plt.show()
 
 
@@ -106,8 +106,8 @@ if __name__ == '__main__':
     tf.enable_eager_execution()
     print("Eager execution: {}".format(tf.executing_eagerly()))
 
-    image_path = "../../images"
-    output_path = "../../output"
+    # image_path = "../../images"
+    # output_path = "../../output"
 
     (train_images, _), (test_images, _) = tf.keras.datasets.mnist.load_data()
 
@@ -152,17 +152,14 @@ if __name__ == '__main__':
         end_time = time.time()
 
         if epoch % 1 == 0:
-            loss = np.mean()
+            loss = tfe.metrics.Mean()
             for test_x in test_dataset:
                 loss(compute_loss(model, test_x))
             elbo = -loss.result()
             # display.clear_output(wait=False)
             print('Epoch: {}, Test set ELBO: {}, '
-                  'time elapse for current epoch {}'.format(epoch,
-                                                            elbo,
-                                                            end_time - start_time))
-            generate_and_save_images(
-                model, epoch, random_vector_for_generation)
+                  'time elapse for current epoch {}'.format(epoch, elbo, end_time - start_time))
+            generate_and_save_images(model, epoch, random_vector_for_generation)
 
     with imageio.get_writer('cvae.gif', mode='I') as writer:
         filenames = glob.glob('vae*.png')
