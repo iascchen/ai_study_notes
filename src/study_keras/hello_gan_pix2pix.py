@@ -8,7 +8,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-path_to_zip = tf.keras.utils.get_file('facades.tar.gz', cache_subdir=os.path.abspath('.'), extract=True,
+# path_to_zip = tf.keras.utils.get_file('facades.tar.gz', cache_subdir=os.path.abspath('.'), extract=True,
 #                                       origin='https://people.eecs.berkeley.edu/~tinghuiz/projects/pix2pix/datasets/facades.tar.gz')
 #
 # PATH = os.path.join(os.path.dirname(path_to_zip), 'facades/')
@@ -17,6 +17,12 @@ BUFFER_SIZE = 400
 BATCH_SIZE = 1
 IMG_WIDTH = 256
 IMG_HEIGHT = 256
+
+data_path = "../../data"
+image_path = "../../images"
+output_path = "../../output"
+
+PATH = "%s/facades/" % data_path
 
 
 def load_image(image_file, is_train):
@@ -299,7 +305,7 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
 EPOCHS = 200
 
 
-def generate_images(model, test_input, tar):
+def generate_images(model, test_input, tar, index):
     # the training=True is intentional here since
     # we want the batch statistics while running the model
     # on the test dataset. If we use training=False, we will get
@@ -317,7 +323,9 @@ def generate_images(model, test_input, tar):
         # getting the pixel values between [0, 1] to plot it.
         plt.imshow(display_list[i] * 0.5 + 0.5)
         plt.axis('off')
-    plt.show()
+
+    plt.savefig('pix2pix_{:04d}.png'.format(index))
+    # plt.show()
 
 
 def train(dataset, epochs):
@@ -345,9 +353,9 @@ def train(dataset, epochs):
                                                         discriminator.variables))
 
         if epoch % 1 == 0:
-            clear_output(wait=True)
+            # clear_output(wait=True)
             for inp, tar in test_dataset.take(1):
-                generate_images(generator, inp, tar)
+                generate_images(generator, inp, tar, epoch)
 
         # saving (checkpoint) the model every 20 epochs
         if (epoch + 1) % 20 == 0:
@@ -360,5 +368,7 @@ def train(dataset, epochs):
 train(train_dataset, EPOCHS)
 
 # Run the trained model on the entire test dataset
+i = 0
 for inp, tar in test_dataset:
-    generate_images(generator, inp, tar)
+    generate_images(generator, inp, tar, i)
+    i += 1
