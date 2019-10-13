@@ -1,10 +1,10 @@
-# 无废话 AI 学习笔记
+# 无废话 Tensorflow v2.0 学习笔记
 
-整理一下我的 AI 学习笔记
+整理一下我的 Tensorflow v2.0 学习笔记
 
 ## 环境配置和快速开始 
 
-Ubuntu 18.04, Tensorflow 1.14.0
+Ubuntu 18.04, Tensorflow v2.0.0
 
 * [环境准备](notes/1_environment.md)
 * [Tensorflow Docker 容器](notes/2_environment_docker.md)

@@ -6,11 +6,13 @@
 
 下面我们来简单的解释一下代码。
 
-    import tensorflow as tf
+**请注意** ： 代码使用的 keras 为 **tensorflow 2.0 版本的 keras** 实现，在后面的文字说明中使用 tf.keras 指代。。
+
+    from tensorflow import keras
 
 ### 加载数据部分
 
-    mnist = tf.keras.datasets.mnist
+    mnist = keras.datasets.mnist
     
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
     x_train, x_test = x_train / 255.0, x_test / 255.0
@@ -23,11 +25,11 @@
  
 下一段代码使用的 tf.keras.models.Sequential 描述了一个简单堆叠层的网络模型，可以想像数据是一层一层顺序流下去的。
 
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dropout(0.2),
-        tf.keras.layers.Dense(10, activation='softmax')
+    model = keras.models.Sequential([
+        keras.layers.Flatten(input_shape=(28, 28)),
+        keras.layers.Dense(128, activation='relu'),
+        keras.layers.Dropout(0.2),
+        keras.layers.Dense(10, activation='softmax')
     ])
 
 * Flatten层：将输入的 28 * 28 的像素值，拉成一个长向量。这个 28 * 28 尺寸是和训练数据有关的。如果验证时输入的图片不是 28 * 28，需要 resize 成这个尺寸才能使用。
@@ -41,9 +43,9 @@
     
 tf.keras.Model.compile 采用三个重要参数：
 
-* optimizer：此对象会指定训练过程。从 tf.train 模块向其传递优化器实例，例如 tf.train.AdamOptimizer、tf.train.RMSPropOptimizer 或 tf.train.GradientDescentOptimizer。
-* loss：要在优化期间最小化的函数。常见选择包括均方误差 (mse)、categorical_crossentropy 和 binary_crossentropy。损失函数由名称或通过从 tf.keras.losses 模块传递可调用对象来指定。
-* metrics：用于监控训练。它们是 tf.keras.metrics 模块中的字符串名称或可调用对象。
+* optimizer：此对象会指定训练过程。从 tf.keras.optimizers 模块向其传递优化器实例，例如 tf.keras.optimizers.Adam、tf.keras.optimizers.RMSProp 或 tf.keras.optimizers.SGD。
+* loss：要在优化期间最小化的函数。是 tf.keras.losses.Loss (即 tf.losses.Loss) 的实例。常见选择包括均方误差 (mse)、categorical_crossentropy 和 binary_crossentropy。
+* metrics：用于监控训练。它们是 tf.keras.metrics (即 tf.metrics) 模块中的字符串名称或可调用对象。
 
 **注意** 此处 loss 使用 sparse_categorical_crossentropy，是与最后一层进行多分类 softmax 输出有关的。
 
@@ -70,7 +72,7 @@ tf.keras.Model.fit 除了需要输入训练集和结果之外，还可以采用�
     model.summary()
     
 这是用于观察模型的常用命令，输出如下：
-
+    
     Model: "sequential"
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
@@ -91,8 +93,9 @@ tf.keras.Model.fit 除了需要输入训练集和结果之外，还可以采用�
 
     base_path = "../../output"
     
+    # use plot_model need graphviz be installed
     model_plot_path = "%s/hello_mnist_1_model_plot.png" % base_path
-    plot_model(model, to_file=model_plot_path, show_shapes=True, show_layer_names=True)
+    keras.utils.plot_model(model, to_file=model_plot_path, show_shapes=True, show_layer_names=True)
 
 执行这段代码，必需首先安装 graphviz 工具，
 
@@ -104,17 +107,17 @@ tf.keras.Model.fit 除了需要输入训练集和结果之外，还可以采用�
     $ sudo apt-get install graphviz
 
 ### 模型的训练的历史
-
+    
     history = model.fit(x_train, y_train, epochs=5)
     history_dict = history.history
     print("History : %s" % history_dict)
     print("History Keys : %s" % history_dict.keys())
 
 这段代码增加了更多的一些信息，能够帮助我们检查训练的效果。这里能够得到每次 epoch 的 metrics 数值，上述代码显示为：
-
-    History : {'loss': [0.30098711755971114, 0.14503948067078987, 0.1103148816332221, 0.09198964524207016, 0.07663518610068908], 
-        'acc': [0.9120833, 0.9568667, 0.9669833, 0.97183335, 0.97573334]}
-    History Keys : dict_keys(['loss', 'acc'])
+    
+    History : {'loss': [0.29361882321139177, 0.14563049617434543, 0.10849536302785079, 0.087534287218377, 0.0756100890989105], 
+        'accuracy': [0.91428334, 0.95715, 0.9677333, 0.97333336, 0.9769167]}
+    History Keys : dict_keys(['loss', 'accuracy'])
 
 其中的 loss 和 acc 是模型的 metrics 指标，这些值和后面模型 evaluate 的结果是对应的。
 
@@ -127,7 +130,7 @@ loaded_model.evaluate 返回的结果是与 model.compile 时使用的 metrics=[
 
 上面代码运行，得到的结果是如下，这个数组对应 [loss, acc] 的值。
     
-    Evaluate Result: [0.07930517309233547, 0.976]
+    Evaluate Result: [0.07440505252983422, 0.9768]
 
 ### 模型的存储和加载
 
@@ -137,13 +140,14 @@ loaded_model.evaluate 返回的结果是与 model.compile 时使用的 metrics=[
 
     # 模型存储
     base_path = "../../output"
+    
     h5_path = "%s/hello_mnist_1.h5" % base_path
     model.save(h5_path)
 
 Keras H5 模型的加载也很简单，使用 tf.keras.models.load_model 即可实现。
 
     # 模型加载
-    loaded_model = tf.keras.models.load_model(h5_path)
+    loaded_model = keras.models.load_model(h5_path)
     loaded_model.summary()
 
 ### 模型的推理 predict 
@@ -157,23 +161,25 @@ Keras H5 模型的加载也很简单，使用 tf.keras.models.load_model 即可�
 
 利用这段代码，我们比较了对测试集 predict 的误差，及其在测试集中的 index 位置。
 
-    220 differences: 
-    [   8  115  151  247  259  321  340  445  448  495  582  591  610  619
-      659  684  691  810  882  900  947  951  956  965 1014 1112 1181 1182
-     1226 1232 1247 1260 1289 1319 1393 1395 1444 1500 1522 1530 1549 1553
-     1681 1709 1717 1721 1737 1751 1754 1790 1878 1901 1941 2004 2024 2033
-     2040 2044 2053 2070 2109 2118 2130 2135 2182 2272 2293 2325 2329 2369
-     2387 2393 2406 2454 2488 2526 2648 2654 2877 2915 2921 2927 2939 2953
-     3030 3073 3117 3172 3206 3289 3422 3503 3520 3549 3550 3558 3559 3567
-     3597 3681 3718 3749 3751 3776 3780 3796 3808 3818 3838 3853 3871 3893
-     3906 3926 3941 3943 3976 3985 4007 4065 4075 4163 4176 4199 4212 4224
-     4248 4289 4294 4355 4360 4369 4433 4437 4443 4497 4536 4571 4575 4601
-     4690 4761 4807 4814 4823 4880 4956 4966 5078 5140 5331 5409 5457 5600
-     5642 5734 5749 5887 5888 5937 5955 5972 5973 6023 6045 6059 6065 6071
-     6166 6421 6555 6559 6560 6571 6574 6597 6625 6632 6651 6755 7208 7216
-     7259 7434 7800 7821 7902 8020 8094 8183 8279 8294 8325 8362 8408 8519
-     8522 8527 9009 9015 9019 9024 9422 9587 9634 9642 9664 9679 9700 9729
-     9745 9768 9770 9779 9792 9839 9858 9888 9944 9982]
+    232 differences: 
+    [ 247  259  290  321  340  381  445  447  449  582  659  691  707  720
+      740  877  924  947  951  956 1014 1039 1112 1181 1182 1194 1202 1226
+     1232 1242 1247 1260 1283 1299 1319 1326 1364 1393 1494 1500 1522 1527
+     1530 1549 1553 1609 1621 1681 1709 1717 1737 1754 1790 1800 1901 1941
+     1952 1982 1984 2004 2016 2018 2024 2035 2040 2044 2053 2070 2098 2109
+     2118 2130 2135 2182 2272 2293 2308 2369 2387 2406 2408 2414 2447 2488
+     2534 2607 2648 2654 2927 2939 2953 2995 3005 3060 3073 3117 3289 3330
+     3405 3474 3503 3520 3549 3550 3558 3559 3567 3597 3718 3727 3751 3767
+     3776 3780 3796 3811 3838 3853 3893 3902 3906 3926 3941 3946 3985 4018
+     4063 4065 4075 4078 4156 4176 4224 4248 4289 4306 4369 4425 4433 4477
+     4497 4504 4534 4536 4547 4567 4601 4639 4751 4807 4814 4823 4860 4880
+     4956 4990 5138 5159 5331 5457 5495 5573 5623 5642 5734 5749 5842 5888
+     5936 5937 5955 5973 6045 6059 6390 6505 6511 6555 6571 6574 6576 6597
+     6603 6608 6625 6651 6744 6755 6783 6847 7186 7216 7434 7451 7545 7849
+     8020 8094 8246 8255 8277 8311 8325 8362 8406 8408 8527 9009 9015 9019
+     9024 9163 9211 9280 9587 9634 9642 9679 9692 9698 9700 9729 9745 9749
+     9768 9770 9777 9779 9792 9839 9879 9904]
+
 
 ## 单独保存和加载模型和权重
 
@@ -194,7 +200,7 @@ Keras H5 模型的加载也很简单，使用 tf.keras.models.load_model 即可�
     
     with open(json_path, 'r') as fr:
         new_json_string = fr.read()
-    json_model = tf.keras.models.model_from_json(new_json_string)
+    json_model = keras.models.model_from_json(new_json_string)
     
     json_model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
@@ -202,18 +208,19 @@ Keras H5 模型的加载也很简单，使用 tf.keras.models.load_model 即可�
     
     yaml_path = "%s/hello_mnist_2.model.yaml" % base_path
     yaml_string = model.to_yaml()
-    with open(yaml_path, 'w') as f:
-        f.write(yaml_string)
+    with open(yaml_path, 'w') as fw:
+        fw.write(yaml_string)
     
     with open(yaml_path, 'r') as fr:
         new_yaml_string = fr.read()
-    yaml_model = tf.keras.models.model_from_yaml(new_yaml_string)
-
+    yaml_model = keras.models.model_from_yaml(new_yaml_string)
+    
     yaml_model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 您可以打开这两个生成的文件看看，里面有各种可以配置的参数，初步了解一下能够对网络模型做哪些参数定制，为以后学习网络优化做个铺垫。
 
-**注意**：子类化模型不可序列化。感觉 Keras 的子类模型，就是一个样子货。
+// TODO
+**注意**：子类化模型不可序列化。感觉 Keras 的子类模型，就是一个样子货。（v1.14。v2.0待测）
 
 ### 单独保存 weights
 
@@ -225,9 +232,10 @@ Keras H5 模型的加载也很简单，使用 tf.keras.models.load_model 即可�
     model.save_weights(weight_path)
     
     json_model.load_weights(weight_path)
+    
 
 保存和加载 Keras 格式的权重文件。生成单独的 .h5 文件。
-        
+    
     h5_weight_path = "%s/hello_mnist_2.weights.h5" % base_path
     model.save_weights(h5_weight_path, save_format='h5')
     
@@ -245,9 +253,10 @@ Keras H5 模型的加载也很简单，使用 tf.keras.models.load_model 即可�
 
 cp_callback 用于输出运算过程中的 Checkpoint 值。period 指定每两次迭代保存一次
     
+    save_freq = 'epoch'
+    
     checkpoint_path = "%s/hello_mnist_3-{epoch:04d}.ckpt" % base_path
-    cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, period=train_period,
-                                                    verbose=1)
+    cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, save_freq=save_freq)                                                   
 
 ### 在 Tensorboard 里显示训练过程
                                                      
@@ -255,18 +264,18 @@ tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --log
 然后在浏览器中访问 http://localhost:6006 
 
     ##################
-    # $ tensorboard --logdir base_path/hello_mnist_3.logs/ 
+    # $ tensorboard --logdir base_path/hello_mnist_3.logs/
     ##################
-
+    
     log_path = "%s/hello_mnist_3.logs" % base_path
-    tp_callback = tf.keras.callbacks.TensorBoard(log_dir=log_path, write_graph=True, write_grads=True, write_images=True,
-                                                 histogram_freq=0, embeddings_freq=0, embeddings_layer_names=None,
-                                                 embeddings_metadata=None)
+    tp_callback = keras.callbacks.TensorBoard(log_dir=log_path, write_graph=True, write_images=True,
+                                              histogram_freq=0, embeddings_freq=0, embeddings_layer_names=None,
+                                              embeddings_metadata=None)
 
 ### 显示训练 History Plot 图表
 
     def random_color(number_of_colors):
-        return ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]) for i in range(number_of_colors)]
+        return ["#" + ''.join([random.choice('0123456789ABCDEF') for _ in range(6)]) for _ in range(number_of_colors)]
     
     
     def draw_history(_history):
@@ -289,7 +298,7 @@ tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --log
         plt.legend()
     
         plt.show()
-    
+
     
     draw_history(history)
    
@@ -298,11 +307,8 @@ tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --log
 [hello_mnist_4.py](../../src/study_keras/hello_mnist_4.py) 对于 Label 数据进行了变换，采用 ont-hot 编码构建了结果向量。
 使用这种编码方式，能够更容易理解对图片进行多分类的训练场景。
 
-    y_train_one_hot = to_categorical(y_train)
-    y_test_one_hot = to_categorical(y_test)
-    
-    print("y_train \n%s" % y_train[:10])
-    print("y_train_one_hot \n%s" % y_train_one_hot[:10])
+    y_train_one_hot = keras.utils.to_categorical(y_train)
+    y_test_one_hot = keras.utils.to_categorical(y_test)
     
 下面的输出，展示这两种结果集编码前10条记录的差异。
 
@@ -329,23 +335,21 @@ tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --log
 
 [hello_mnist_5.py](../../src/study_keras/hello_mnist_5.py) 展示了将训练好的模型转换成 tensorflow.js 和 tensorflow lite 的过程，能够将这个模型运用于 web 或 APP。
 
-输出成 tensorflow.js 的模型
-
-    tfjs_path = "%s/hello_mnist_5.tfjs" % base_path
-    tfjs.converters.save_keras_model(loaded_model, tfjs_path)
-    
-输出成 tensorflow Lite 的模型。
-
-**注意** 这段代码参考自官方文档，Ubuntu 18.04 上可以。
-
+输出成 tensorflow Lite 的模型。这个实现和 tf v1.14 的代码不相同。
+        
     tflite_path = "%s/hello_mnist_5.tflite" % base_path
-    converter = tf.lite.TFLiteConverter.from_keras_model_file(h5_path)
+
+    converter = lite.TFLiteConverter.from_keras_model(loaded_model)
     tflite_model = converter.convert()
     with open(tflite_path, "wb") as fw:
         fw.write(tflite_model)
         
-在 MAC 上不能正确运行（tf v1.14.0), 返回错误：
+输出成 tensorflow.js 的模型。
 
-    2019-08-08 15:45:30.670308: I tensorflow/core/grappler/optimizers/meta_optimizer.cc:716] Optimization results for grappler item: graph_to_optimize
-    2019-08-08 15:45:30.670319: I tensorflow/core/grappler/optimizers/meta_optimizer.cc:718]   function_optimizer: function_optimizer did nothing. time = 0.003ms.
-    2019-08-08 15:45:30.670325: I tensorflow/core/grappler/optimizers/meta_optimizer.cc:718]   function_optimizer: function_optimizer did nothing. time = 0ms.
+因为 tensorflow.js 目前版本 (v1.2.10.1) 仅支持 tensorflow 1.14, 安装时会自动安装 tf 1.14。
+所以，需要在安装 tensorflow.js 之后再安装一遍 tensorflow 2.0.0。
+在 tf2 下运行能够生成 tfjs 的模型。
+
+    tfjs_path = "%s/hello_mnist_5.tfjs" % base_path
+    tfjs.converters.save_keras_model(loaded_model, tfjs_path)
+    
