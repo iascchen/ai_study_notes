@@ -1,18 +1,18 @@
 import random
 
 import matplotlib.pyplot as plt
-import tensorflow as tf
+from tensorflow import keras
 
-mnist = tf.keras.datasets.mnist
+mnist = keras.datasets.mnist
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x_train, x_test = x_train / 255.0, x_test / 255.0
 
-model = tf.keras.models.Sequential([
-    tf.keras.layers.Flatten(input_shape=(28, 28)),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Dense(10, activation='softmax')
+model = keras.models.Sequential([
+    keras.layers.Flatten(input_shape=(28, 28)),
+    keras.layers.Dense(128, activation='relu'),
+    keras.layers.Dropout(0.2),
+    keras.layers.Dense(10, activation='softmax')
 ])
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
@@ -23,23 +23,22 @@ model.summary()
 #######################
 
 train_epochs = 6
-train_period = 2
+save_freq = 'epoch'
 
 # Create checkpoint callback
 base_path = "../../output"
 
 checkpoint_path = "%s/hello_mnist_3-{epoch:04d}.ckpt" % base_path
-cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, period=train_period,
-                                                 verbose=1)
+cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, save_freq=save_freq)
 
 ##################
 # $ tensorboard --logdir base_path/hello_mnist_3.logs/
 ##################
 
 log_path = "%s/hello_mnist_3.logs" % base_path
-tp_callback = tf.keras.callbacks.TensorBoard(log_dir=log_path, write_graph=True, write_grads=True, write_images=True,
-                                             histogram_freq=0, embeddings_freq=0, embeddings_layer_names=None,
-                                             embeddings_metadata=None)
+tp_callback = keras.callbacks.TensorBoard(log_dir=log_path, write_graph=True, write_images=True,
+                                          histogram_freq=0, embeddings_freq=0, embeddings_layer_names=None,
+                                          embeddings_metadata=None)
 
 history = model.fit(x_train, y_train, epochs=train_epochs, callbacks=[cp_callback, tp_callback])
 
@@ -49,7 +48,7 @@ history = model.fit(x_train, y_train, epochs=train_epochs, callbacks=[cp_callbac
 #######################
 
 def random_color(number_of_colors):
-    return ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)]) for i in range(number_of_colors)]
+    return ["#" + ''.join([random.choice('0123456789ABCDEF') for _ in range(6)]) for _ in range(number_of_colors)]
 
 
 def draw_history(_history):
