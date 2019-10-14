@@ -1,16 +1,16 @@
 import numpy as np
-from tensorflow import keras
+from tensorflow.keras import datasets, layers, models, utils
 
-mnist = keras.datasets.mnist
+mnist = datasets.mnist
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x_train, x_test = x_train / 255.0, x_test / 255.0
 
-model = keras.models.Sequential([
-    keras.layers.Flatten(input_shape=(28, 28)),
-    keras.layers.Dense(128, activation='relu'),
-    keras.layers.Dropout(0.2),
-    keras.layers.Dense(10, activation='softmax')
+model = models.Sequential([
+    layers.Flatten(input_shape=(28, 28)),
+    layers.Dense(128, activation='relu'),
+    layers.Dropout(0.2),
+    layers.Dense(10, activation='softmax')
 ])
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
@@ -36,7 +36,7 @@ base_path = "../../output"
 h5_path = "%s/hello_mnist_1.h5" % base_path
 model.save(h5_path)
 
-loaded_model = keras.models.load_model(h5_path)
+loaded_model = models.load_model(h5_path)
 loaded_model.summary()
 
 #######################
@@ -59,4 +59,4 @@ print("%d differences: \n%s" % (len(diff), diff))
 
 # use plot_model need graphviz be installed
 model_plot_path = "%s/hello_mnist_1_model_plot.png" % base_path
-keras.utils.plot_model(model, to_file=model_plot_path, show_shapes=True, show_layer_names=True)
+utils.plot_model(model, to_file=model_plot_path, show_shapes=True, show_layer_names=True)

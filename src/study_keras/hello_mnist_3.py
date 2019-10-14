@@ -1,18 +1,18 @@
 import random
 
 import matplotlib.pyplot as plt
-from tensorflow import keras
+from tensorflow.keras import callbacks, datasets, layers, models
 
-mnist = keras.datasets.mnist
+mnist = datasets.mnist
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x_train, x_test = x_train / 255.0, x_test / 255.0
 
-model = keras.models.Sequential([
-    keras.layers.Flatten(input_shape=(28, 28)),
-    keras.layers.Dense(128, activation='relu'),
-    keras.layers.Dropout(0.2),
-    keras.layers.Dense(10, activation='softmax')
+model = models.Sequential([
+    layers.Flatten(input_shape=(28, 28)),
+    layers.Dense(128, activation='relu'),
+    layers.Dropout(0.2),
+    layers.Dense(10, activation='softmax')
 ])
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
@@ -29,16 +29,16 @@ save_freq = 'epoch'
 base_path = "../../output"
 
 checkpoint_path = "%s/hello_mnist_3-{epoch:04d}.ckpt" % base_path
-cp_callback = keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, save_freq=save_freq)
+cp_callback = callbacks.ModelCheckpoint(checkpoint_path, save_weights_only=True, save_freq=save_freq)
 
 ##################
 # $ tensorboard --logdir base_path/hello_mnist_3.logs/
 ##################
 
 log_path = "%s/hello_mnist_3.logs" % base_path
-tp_callback = keras.callbacks.TensorBoard(log_dir=log_path, write_graph=True, write_images=True,
-                                          histogram_freq=0, embeddings_freq=0, embeddings_layer_names=None,
-                                          embeddings_metadata=None)
+tp_callback = callbacks.TensorBoard(log_dir=log_path, write_graph=True, write_images=True,
+                                    histogram_freq=0, embeddings_freq=0, embeddings_layer_names=None,
+                                    embeddings_metadata=None)
 
 history = model.fit(x_train, y_train, epochs=train_epochs, callbacks=[cp_callback, tp_callback])
 

@@ -1,15 +1,15 @@
-from tensorflow import keras
+from tensorflow.keras import datasets, layers, models, utils
 
-mnist = keras.datasets.mnist
+mnist = datasets.mnist
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x_train, x_test = x_train / 255.0, x_test / 255.0
 
-model = keras.models.Sequential([
-    keras.layers.Flatten(input_shape=(28, 28)),
-    keras.layers.Dense(128, activation='relu'),
-    keras.layers.Dropout(0.2),
-    keras.layers.Dense(10, activation='softmax')
+model = models.Sequential([
+    layers.Flatten(input_shape=(28, 28)),
+    layers.Dense(128, activation='relu'),
+    layers.Dropout(0.2),
+    layers.Dense(10, activation='softmax')
 ])
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
@@ -30,7 +30,7 @@ with open(json_path, 'w') as fw:
 
 with open(json_path, 'r') as fr:
     new_json_string = fr.read()
-json_model = keras.models.model_from_json(new_json_string)
+json_model = models.model_from_json(new_json_string)
 
 json_model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
@@ -43,7 +43,7 @@ with open(yaml_path, 'w') as fw:
 
 with open(yaml_path, 'r') as fr:
     new_yaml_string = fr.read()
-yaml_model = keras.models.model_from_yaml(new_yaml_string)
+yaml_model = models.model_from_yaml(new_yaml_string)
 
 yaml_model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 

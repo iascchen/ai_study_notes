@@ -1,8 +1,8 @@
 import tensorflowjs as tfjs
-from tensorflow import keras
 from tensorflow import lite
+from tensorflow.keras import datasets, models
 
-mnist = keras.datasets.mnist
+mnist = datasets.mnist
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x_train, x_test = x_train / 255.0, x_test / 255.0
@@ -13,7 +13,7 @@ x_train, x_test = x_train / 255.0, x_test / 255.0
 base_path = "../../output"
 
 h5_path = "%s/hello_mnist_1.h5" % base_path
-loaded_model = keras.models.load_model(h5_path)
+loaded_model = models.load_model(h5_path)
 loaded_model.summary()
 
 #######################
