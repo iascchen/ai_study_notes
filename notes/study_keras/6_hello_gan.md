@@ -76,4 +76,4 @@ GAN无需特定的cost function的优势和学习过程可以学习到很好的�
     $ wget https://people.eecs.berkeley.edu/~tinghuiz/projects/pix2pix/datasets/facades.tar.gz
     $ tar -xvf facades.tar.gz
 
-[hello_gan_pix2pix.py](../../src/study_keras/hello_gan_pix2pix.py) 展示了迁移学习的基本过程。
+[hello_gan_pix2pix.py](../../src/study_keras/6_hello_gan/hello_gan_pix2pix.py) 展示了迁移学习的基本过程。

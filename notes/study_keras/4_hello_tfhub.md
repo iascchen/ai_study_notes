@@ -6,7 +6,7 @@ TFHub 的 模型加载可以使用 URL，直接从云端下载。也可以使用
 
 使用 TFHub 之前，需要下载对应的模型，由于网络的原因，一般下载比较慢。
 
-[hello_tfhub.py](../../src/study_keras/hello_tfhub.py) 通过设定 TFHUB_CACHE_DIR 环境变量，指定了模型的下载存储路径，将云端下载的内容存在你需要的位置。
+[hello_tfhub.py](../../src/study_keras/4_hello_tfhub/hello_tfhub.py) 通过设定 TFHUB_CACHE_DIR 环境变量，指定了模型的下载存储路径，将云端下载的内容存在你需要的位置。
 下载的模型会被存放在对应 Hash 值的目录下，同时会产生一个hash值为名称的文本描述文件。
 这个模型目录下，会有 tfhub_module.pb 和 saved_module.pb 这样的模型文件，还会有对应的参数存储。
 get_input_info_dict 和 get_output_info_dict 能够显示此模型的输入输出信息。
@@ -60,7 +60,7 @@ get_input_info_dict 和 get_output_info_dict 能够显示此模型的输入输�
 
 ## 使用 TFHub 进行对象检测
 
-[hello_tfhub_obj_detector.py](../../src/study_keras/hello_tfhub_obj_detector.py) 展示了直接使用 TFHub 预处理好的模型，进行对象检测。
+[hello_tfhub_obj_detector.py](../../src/study_keras/4_hello_tfhub/hello_tfhub_obj_detector.py) 展示了直接使用 TFHub 预处理好的模型，进行对象检测。
 
     with tf.Graph().as_default():
         detector = hub.Module(module_handle)
@@ -109,7 +109,7 @@ get_input_info_dict 和 get_output_info_dict 能够显示此模型的输入输�
     
 ## 结合使用 TFHub 和 Keras
 
-[hello_tfhub_keras.py](../../src/study_keras/hello_tfhub_keras.py) 展示了直接使用 TFHub 和 Keras 之间的互动。
+[hello_tfhub_keras.py](../../src/study_keras/4_hello_tfhub/hello_tfhub_keras.py) 展示了直接使用 TFHub 和 Keras 之间的互动。
 
 **注意** 这部分内容是 TF 2 的功能，在 TF 1.14 上没有实验成功。
 

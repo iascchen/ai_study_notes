@@ -2,7 +2,7 @@
 
 ## 从最简版本开始
 
-[hello_mnist.py](../../src/study_keras/hello_mnist.py) 描述了一个最简单图片单分类的 Keras 网络。
+[hello_mnist.py](../../src/study_keras/1_hello_mnist/hello_mnist.py) 描述了一个最简单图片单分类的 Keras 网络。
 
 下面我们来简单的解释一下代码。
 
@@ -65,7 +65,7 @@ tf.keras.Model.fit 除了需要输入训练集和结果之外，还可以采用�
     
 ## 保存和加载已经训练好的模型
 
-[hello_mnist_1.py](../../src/study_keras/hello_mnist_1.py) 对上面的例子做了些扩展，增加了对于模型的保存和加载
+[hello_mnist_1.py](../../src/study_keras/1_hello_mnist/hello_mnist_1.py) 对上面的例子做了些扩展，增加了对于模型的保存和加载
 
 ### 模型的展示
 
@@ -183,7 +183,7 @@ Keras H5 模型的加载也很简单，使用 tf.keras.models.load_model 即可�
 
 ## 单独保存和加载模型和权重
 
-[hello_mnist_2.py](../../src/study_keras/hello_mnist_2.py) 展示例如何单独保存模型和权重
+[hello_mnist_2.py](../../src/study_keras/1_hello_mnist/hello_mnist_2.py) 展示例如何单独保存模型和权重
 
 ### 单独保存模型结构
 
@@ -243,7 +243,7 @@ Keras H5 模型的加载也很简单，使用 tf.keras.models.load_model 即可�
 
 ## 模型可视化以及观察训练的过程
 
-[hello_mnist_3.py](../../src/study_keras/hello_mnist_3.py) 增加了一些代码，是我们能够直观的观察到网络训练的过程，并利用 tensorboard 可视化出来。
+[hello_mnist_3.py](../../src/study_keras/1_hello_mnist/hello_mnist_3.py) 增加了一些代码，是我们能够直观的观察到网络训练的过程，并利用 tensorboard 可视化出来。
 
 ### 利用 Callback 保存训练过程中的 weights
 
@@ -304,7 +304,7 @@ tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --log
    
 ## 使用 one-hot 编码数据进行训练
 
-[hello_mnist_4.py](../../src/study_keras/hello_mnist_4.py) 对于 Label 数据进行了变换，采用 ont-hot 编码构建了结果向量。
+[hello_mnist_4.py](../../src/study_keras/1_hello_mnist/hello_mnist_4.py) 对于 Label 数据进行了变换，采用 ont-hot 编码构建了结果向量。
 使用这种编码方式，能够更容易理解对图片进行多分类的训练场景。
 
     y_train_one_hot = keras.utils.to_categorical(y_train)
@@ -333,7 +333,7 @@ tp_callback 用于输出 Tensorboard 可用的日志。使用 "tensorboard --log
 
 ## 模型运用到 web 和 APP
 
-[hello_mnist_5.py](../../src/study_keras/hello_mnist_5.py) 展示了将训练好的模型转换成 tensorflow.js 和 tensorflow lite 的过程，能够将这个模型运用于 web 或 APP。
+[hello_mnist_5.py](../../src/study_keras/1_hello_mnist/hello_mnist_5.py) 展示了将训练好的模型转换成 tensorflow.js 和 tensorflow lite 的过程，能够将这个模型运用于 web 或 APP。
 
 输出成 tensorflow Lite 的模型。这个实现和 tf v1.14 的代码不相同。
         

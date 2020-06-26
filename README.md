@@ -1,5 +1,9 @@
 # 无废话 Tensorflow v2.0 学习笔记
 
+python 3.7.6
+tensorflowjs 1.5.2
+tensorflow_cpu 2.1.0
+
 整理一下我的 Tensorflow v2.0 学习笔记
 
 ## 环境配置和快速开始 

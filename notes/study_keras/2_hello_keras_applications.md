@@ -12,7 +12,7 @@
 
 ## MobileNet v1
 
-[hello_kerasapp_mobilenetv1.py](../../src/study_keras/hello_kerasapp_mobilenetv1.py) 展示了基础的 MobileNet V1 进行图像分类的过程
+[hello_kerasapp_mobilenetv1.py](../../src/study_keras/2_hello_keras_applications/hello_kerasapp_mobilenetv1.py) 展示了基础的 MobileNet V1 进行图像分类的过程
 
 能够创建不同精度的模型
 
@@ -44,7 +44,7 @@
 
 ## 切换多种 Keras 模型
 
-[hello_kerasapp_vgg16.py](../../src/study_keras/hello_kerasapp_vgg16.py) 展示了使用各种 Keras Applications 中的预训练网络。
+[hello_kerasapp_vgg16.py](../../src/study_keras/2_hello_keras_applications/hello_kerasapp_vgg16.py) 展示了使用各种 Keras Applications 中的预训练网络。
 
 
 载入合适的网络
@@ -214,7 +214,7 @@ Keras 官方提供了一个卷积层可视化的例子，[https://keras.io/examp
         plt.show()
         cv2.imwrite("%s/%s.%s_filter.jpg" % (output_path, model_name, layer_name), results)
 
-调用方式很简单，[hello_kerasapp_mobilenetv2_2.py](../../src/study_keras/hello_kerasapp_mobilenetv2_2.py) 的代码将 MobileNet V2 中所有的卷积层的 filter 都显示一遍。不过输出的纹理似乎并没有 VGG16 的那么清晰好看。
+调用方式很简单，[hello_kerasapp_mobilenetv2_2.py](../../src/study_keras/2_hello_keras_applications/hello_kerasapp_mobilenetv2_2.py) 的代码将 MobileNet V2 中所有的卷积层的 filter 都显示一遍。不过输出的纹理似乎并没有 VGG16 的那么清晰好看。
 
     # define the model
     model = mobilenet_v2.MobileNetV2(input_shape=None, alpha=1.0, include_top=True,
@@ -280,7 +280,7 @@ Keras 官方提供了一个卷积层可视化的例子，[https://keras.io/examp
             cv2.imwrite("%s/%s.%s_actication.jpg" % (output_path, _pre, layer_name), display_grid)
 
 调用时，现需要指定需要输出的层次，利用 Model 构建出一个新的模型，然后对这个新模型做 predict。
-[hello_kerasapp_mobilenetv2_3.py](../../src/study_keras/hello_kerasapp_mobilenetv2_3.py) 对这一行为做了示例。
+[hello_kerasapp_mobilenetv2_3.py](../../src/study_keras/2_hello_keras_applications/hello_kerasapp_mobilenetv2_3.py) 对这一行为做了示例。
 
     layers_names = [layer.name for layer in model.layers if (layer.__class__.__name__ == 'Conv2D')]
     layers_outputs = [layer.output for layer in model.layers if (layer.__class__.__name__ == 'Conv2D')]
@@ -326,7 +326,7 @@ Keras 官方提供了一个卷积层可视化的例子，[https://keras.io/examp
         superimposed_img = np.uint8(heat_map * 0.4 + 255 * input_image)
         return superimposed_img
 
-调用示例在 [hello_kerasapp_mobilenetv2_4.py](../../src/study_keras/hello_kerasapp_mobilenetv2_4.py)。
+调用示例在 [hello_kerasapp_mobilenetv2_4.py](../../src/study_keras/2_hello_keras_applications/hello_kerasapp_mobilenetv2_4.py)。
 
     layers_names = [layer.name for layer in model.layers if (layer.__class__.__name__ == 'Conv2D')]
 

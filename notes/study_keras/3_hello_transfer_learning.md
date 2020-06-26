@@ -6,7 +6,7 @@
     $ wget https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz
     $ tar -xvf flower_photos.tgz
 
-[hello_transfer_learning.py](../../src/study_keras/hello_transfer_learning.py) 展示了迁移学习的基本过程。
+[hello_transfer_learning.py](../../src/study_keras/3_hello_transfer_learning/hello_transfer_learning.py) 展示了迁移学习的基本过程。
 
 ## 使用 ImageDataGenerator 创建训练和检验
 
@@ -89,7 +89,7 @@
     
 ## 从 keras application 构建迁移学习的模型
 
-[hello_transfer_learning.py](../../src/study_keras/hello_transfer_learning.py) 展示了如何在已经训练好的模型上进行迁移学习并验证的过程
+[hello_transfer_learning.py](../../src/study_keras/3_hello_transfer_learning/hello_transfer_learning.py) 展示了如何在已经训练好的模型上进行迁移学习并验证的过程
 
 获取已经训练好的基础模型。include_top=False 去掉了最后的 Dense 分类层，因为我们训练出新的5各类别，所以不需要这一层。
     
@@ -222,7 +222,7 @@ Estimator 具有下列优势：可以在本地主机上或分布式多服务器�
 
 **这个例子可以使用到GPU运算！！！但是似乎会挂住**
 
-[hello_transfer_learning_2.py](../../src/study_keras/hello_transfer_learning_2.py) 展示了迁移学习模型在 Estimator 上运行的基本过程。
+[hello_transfer_learning_2.py](../../src/study_keras/3_hello_transfer_learning/hello_transfer_learning_2.py) 展示了迁移学习模型在 Estimator 上运行的基本过程。
 
     ###################
     # Use tensorflow estimator

@@ -1,49 +1,87 @@
 # 快速开始：安装 Python 和 Tensorflow 环境，并使用本例
 
-## 安装 Python3
+## 安装 miniconda 和 Python3 环境
 
-    $ sudo apt-get update && sudo apt-get upgrade
-    $ sudo apt-get install -y python3-pip python3-dev python-virtualenv
+安装 conda 的目的是简化安装 python3 及其虚拟环境的过程。
+
+conda 分为 anaconda 和 miniconda。
+anaconda是包含一些常用包的版本（这里的常用不代表你常用），miniconda则是精简版，需要啥装啥，所以推荐使用miniconda。
+
+下载网址
+conda官网：[https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html#). 
+选择适合自己操作系统的 Python3 相关版本。
+
+例如：
+
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.pkg
+
+下载安装即可。
+安装时，被询问是否将conda加入环境变量的时候选择 **no**。
+安装完成之后，可以使用 conda --version 查看版本。
+
+    $ conda --version
+    conda 4.7.12
+
+需要注意的是，conda 在安装软件的时候需要C库就自己安装，需要R包就自己按照R，需要perl就自己安装，而且我把conda的默认路径添加到环境变量最新，最高权限，就把我默认的perl,r全部替换了。
+conda请最好是通过source启动，一定要用conda安装不同功能的软件各个env，免得它污染环境变量，使用某些软件，就激活某些env。
+
+leotao的建议
+不要让conda在安装时，把path加到系统里去，要用的时候激活
+
+激活后，用conda install -p /path/for/biotools/把 生信软件装到特定位置,而且这个位置的python版本最好和系统的一样
+
+把这个 /path/for/biotools/ 加入到系统path
+
+可能这样做后，反激活conda后生信软件也能用，同时不会污染环境
+
+[参考链接](https://mp.weixin.qq.com/s?__biz=MzAxMDkxODM1Ng==&mid=2247486380&idx=1&sn=9329fcd0a60ac5488607d359d6c28134&chksm=9b484b17ac3fc20153d25cbdefe5017c7aa9080d13b5473a05f79808244e848b0a45d2a6a735&scene=21#wechat_redirect)
 
 创建工作目录
 
     $ mkdir workspaces
     $ cd workspaces
     
-创建 Python 虚拟环境，我们把它起名为 tf
+创建 Python 虚拟环境，我们把它起名为 tf2
 
-    $ virtualenv --system-site-packages -p python3 tf
+    $ virtualenv --system-site-packages -p python3 tf2
+    
+    $ conda create -n tf2 python=3
+    $ conda activate tf2
 
 启动虚拟环境
-
-    $ . tf/bin/activate
-    (tf) $ python --version
-    Python 3.7.3
-    (tf) $ pip --version
-    pip 19.2.1 from /home/.../tf/lib/python3.7/site-packages/pip (python 3.7)
     
-## 安装 Tensorflow 1.14.0
+    $ . tf2/bin/activate
+    
+    $ conda activate tf2
+    (tf2) $ python --version
+    Python 3.7.4
+    (tf2) $ pip --version
+    pip 19.2.3 from /Users/chenhao/miniconda3/envs/tf2/lib/python3.7/site-packages/pip (python 3.7)
 
-进入对应的 Python 虚拟环境
+## 安装 Tensorflow 2.0.0
+
+因为 Conda 尚未集成 Tensorflow 2，所以只能使用 pip 来安装。
 
     $ cd workspaces
     $ . tf/bin/activate
-
+    
+    $ conda activate tf2
+    
 Clone 此项目
 
-    (tf) $ git clone https://github.com/iascchen/ai_study_notes.git
+    (tf2) $ git clone https://github.com/iascchen/ai_study_notes.git
     
 安装所需要的 Python 包，如果没有 GPU 请把 tensorflow-gpu 注释掉。
     
-    (tf) $ cd ai_study_notes/src
-    (tf) ai_study_notes/src$ ls
-    (tf) ai_study_notes/src$ pip install -r requirements.txt
+    (tf2) $ cd ai_study_notes/src
+    (tf2) ai_study_notes/src$ ls
+    (tf2) ai_study_notes/src$ pip install -r requirements.txt
 
 安装前，你可以查看一下 [requirements.txt](../src/requirements.txt) 的内容。
 
 验证代码
 
-    (tf) $ python hello_gpu.py
+    (tf2) $ python hello_gpu.py
     
 ## 安装 CUDA 10
 
