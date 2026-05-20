@@ -14,7 +14,7 @@ tensorflow_datasets
 # tensorflow-gpu
 
 imageio==2.5.0
-pytest==5.0.0
+pytest==9.0.3
 seaborn==0.9.0
 pycocotools==2.0.0
 labelImg==1.8.3
